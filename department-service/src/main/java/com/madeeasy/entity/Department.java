@@ -1,9 +1,7 @@
 package com.madeeasy.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +17,13 @@ import java.io.Serializable;
 public class Department implements Serializable {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "department_sequence_generator")
+    @SequenceGenerator(
+            name = "department_sequence_generator",
+            sequenceName = "department_sequence",
+            allocationSize = 1
+    )
+    private Long id;
 
     @Column(nullable = false)
     private String name;

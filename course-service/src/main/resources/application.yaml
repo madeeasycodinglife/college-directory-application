@@ -1,17 +1,8 @@
 server:
-  port: 8084
-
+  port: ${SERVER_PORT:8084}
 spring:
   application:
     name: course-service
-  threads:
-    virtual:
-      enabled: true
-  output:
-    ansi:
-      enabled: ALWAYS
-
-
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:course-service}
     username: ${SPRING_DATASOURCE_USERNAME:sa}
@@ -32,6 +23,6 @@ spring:
     resources:
       add-mappings: ${SPRING_WEB_RESOURCES_ADD_MAPPINGS:false}
 
-
-
-
+  output:
+    ansi:
+      enabled: ALWAYS

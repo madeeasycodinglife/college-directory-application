@@ -1,16 +1,9 @@
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}
 
 spring:
   application:
     name: user-service
-  threads:
-    virtual:
-      enabled: true
-  output:
-    ansi:
-      enabled: ALWAYS
-
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:user-service}
     username: ${SPRING_DATASOURCE_USERNAME:sa}
@@ -31,4 +24,6 @@ spring:
     resources:
       add-mappings: ${SPRING_WEB_RESOURCES_ADD_MAPPINGS:false}
 
-
+  output:
+    ansi:
+      enabled: ALWAYS

@@ -1,0 +1,13 @@
+package com.madeeasy.service;
+
+import com.madeeasy.dto.request.EnrollmentRequestDTO;
+import com.madeeasy.dto.response.EnrollmentResponseDTO;
+
+import java.util.List;
+
+public interface EnrollmentService {
+
+    EnrollmentResponseDTO createEnrollment(EnrollmentRequestDTO enrollmentRequestDTO);
+
+    List<EnrollmentResponseDTO> getAllEnrollments();
+}

@@ -1,8 +1,6 @@
 package com.madeeasy.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,13 +17,19 @@ import java.io.Serializable;
 public class Enrollment implements Serializable {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "enrollment_sequence_generator")
+    @SequenceGenerator(
+            name = "enrollment_sequence_generator",
+            sequenceName = "enrollment_sequence",
+            allocationSize = 1
+    )
+    private Long id;
 
     @Column(nullable = false)
-    private String studentId;
+    private Long studentId;
 
     @Column(nullable = false)
-    private String courseId;
+    private Long courseId;
 
 
 }

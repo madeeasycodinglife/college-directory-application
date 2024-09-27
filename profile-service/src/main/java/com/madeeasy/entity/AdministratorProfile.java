@@ -20,11 +20,13 @@ import java.io.Serializable;
 public class AdministratorProfile implements Serializable {
 
     @Id
-    private String id; // This will match User's ID
+    private Long id; // This will match User's ID
 
     @Lob // Indicates that this field can store large objects
     private byte[] photo; // Binary data of the photo
 
+    private String type;
+
     @Column(nullable = false)
-    private String departmentId;
+    private Long departmentId;
 }
