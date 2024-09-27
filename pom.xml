@@ -11,6 +11,7 @@
     <groupId>com.madeeasy</groupId>
     <artifactId>college-directory-application</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>college-directory-application</name>
     <description>college directory application project using spring boot microservices</description>
     <url/>
@@ -20,6 +21,14 @@
     <developers>
         <developer/>
     </developers>
+    <modules>
+        <module>user-service</module>
+        <module>profile-service</module>
+        <module>department-service</module>
+        <module>course-service</module>
+        <module>enrollment-service</module>
+    </modules>
+
     <scm>
         <connection/>
         <developerConnection/>
