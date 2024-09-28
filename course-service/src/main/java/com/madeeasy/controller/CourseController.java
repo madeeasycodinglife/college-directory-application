@@ -1,5 +1,6 @@
 package com.madeeasy.controller;
 
+import com.madeeasy.dto.request.CourseAssignmentRequestDTO;
 import com.madeeasy.dto.request.CourseRequestDTO;
 import com.madeeasy.dto.response.CourseResponseDTO;
 import com.madeeasy.dto.response.ResponseDTO;
@@ -28,6 +29,12 @@ public class CourseController {
     public ResponseEntity<?> createCourse(@Valid @RequestBody CourseRequestDTO course) {
         CourseResponseDTO createdCourse = courseService.createCourse(course);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCourse);
+    }
+
+    @PatchMapping(path = "/course-assignment")
+    public ResponseEntity<?> courseAssignment(@Valid @RequestBody CourseAssignmentRequestDTO course) {
+        CourseResponseDTO updatedCourse = courseService.courseAssignment(course);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedCourse);
     }
 
     @GetMapping

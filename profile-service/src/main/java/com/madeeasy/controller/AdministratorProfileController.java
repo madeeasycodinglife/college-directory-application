@@ -49,4 +49,15 @@ public class AdministratorProfileController {
                 .contentType(MediaType.valueOf(administratorProfileResponseDTO.getType()))
                 .body(new ByteArrayResource(administratorProfileResponseDTO.getPhoto()));
     }
+    @GetMapping(path = "/get-by-id/{id}")
+    public ResponseEntity<?> getAdministratorById(@PathVariable Long id) {
+        Map<String, String> errors = ValidationUtils.validatePositiveInteger(id.intValue(), "id");
+
+        if (!errors.isEmpty()) {
+            return ResponseEntity.badRequest().body(errors);
+        }
+        AdministratorProfileResponseDTO administratorProfileResponseDTO = this.administratorProfileService.getAdministratorById(id);
+        return ResponseEntity.ok()
+                .body(administratorProfileResponseDTO);
+    }
 }

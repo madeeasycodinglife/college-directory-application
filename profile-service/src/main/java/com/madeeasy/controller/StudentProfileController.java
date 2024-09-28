@@ -53,6 +53,16 @@ public class StudentProfileController {
                 .body(studentProfile);
     }
 
+    @GetMapping(path = "/get-by-id/{id}")
+    public ResponseEntity<?> getStudentId(@PathVariable Long id) {
+        Map<String, String> roleValidationErrors = ValidationUtils.validatePositiveInteger(id.intValue(), "id");
+        if (!roleValidationErrors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(roleValidationErrors);
+        }
+        StudentProfileResponseDTO studentProfileResponseDTO = this.studentProfileService.getStudentById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(studentProfileResponseDTO);
+    }
+
     @GetMapping(path = "/get-photo-by-id/{id}")
     public ResponseEntity<?> getPhotoById(@PathVariable Long id) {
         Map<String, String> roleValidationErrors = ValidationUtils.validatePositiveInteger(id.intValue(), "id");

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponseDTO implements Serializable {
 
-    private String id;
+    private Long id;
     private String fullName;
     private String email;
     private String password;

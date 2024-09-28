@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Validated
 @RestController
-@RequestMapping(path = "/user-service")
+@RequestMapping(path = "/api/user")
 @RequiredArgsConstructor
 public class UserServiceController {
 
@@ -91,4 +91,17 @@ public class UserServiceController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
+
+    @GetMapping(path = "/get-by-id/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable("id") Long id) {
+        Map<String, String> validationErrors = ValidationUtils.validatePositiveInteger(id.intValue(), "id");
+        if (!validationErrors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validationErrors);
+        }
+        UserResponseDTO user = this.userService.getUserById(id);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with id: " + id);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
 }

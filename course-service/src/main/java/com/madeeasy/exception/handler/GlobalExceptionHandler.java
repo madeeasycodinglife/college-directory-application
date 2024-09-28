@@ -99,7 +99,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
-
+    @ExceptionHandler(CourseNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleCourseNotFoundException(CourseNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(Map.of("status", HttpStatus.NOT_FOUND, "message", ex.getMessage()));
+    }
 
     @ExceptionHandler(CourseInstanceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleCourseInstanceNotFoundException(CourseInstanceNotFoundException ex) {

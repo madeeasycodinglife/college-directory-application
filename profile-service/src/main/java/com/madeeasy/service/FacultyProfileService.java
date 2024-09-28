@@ -14,4 +14,6 @@ public interface FacultyProfileService {
     FacultyProfileResponseDTO getPhotoById(Long id);
 
     List<FacultyProfileResponseDTO> getCoursesByFacultyId(Long id);
+
+    FacultyProfileResponseDTO getFacultyById(Long id);
 }

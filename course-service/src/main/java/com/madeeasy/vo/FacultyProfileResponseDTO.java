@@ -1,4 +1,4 @@
-package com.madeeasy.dto.response;
+package com.madeeasy.vo;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -7,21 +7,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AdministratorProfileResponseDTO {
+public class FacultyProfileResponseDTO {
 
     private Long id;
     @JsonIgnore
     private byte[] photo;
     @JsonIgnore
     private String type;
+    private String officeHours;
     private Long departmentId;
-    private HttpStatus status;
-    private String message;
 }

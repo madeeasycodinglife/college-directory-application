@@ -52,6 +52,18 @@ public class FacultyProfileController {
                 .body(new ByteArrayResource(facultyProfileResponseDTO.getPhoto()));
     }
 
+    @GetMapping(path = "/get-by-id/{id}")
+    public ResponseEntity<?> getFacultyId(@PathVariable Long id) {
+        Map<String, String> errors = ValidationUtils.validatePositiveInteger(id.intValue(), "id");
+
+        if (!errors.isEmpty()) {
+            return ResponseEntity.badRequest().body(errors);
+        }
+        FacultyProfileResponseDTO facultyProfileResponseDTO = this.facultyProfileService.getFacultyById(id);
+        return ResponseEntity.ok()
+                .body(facultyProfileResponseDTO);
+    }
+
     // /{id}/courses: Get all courses taught by the faculty member.
 
     @GetMapping(path = "/{id}/courses")

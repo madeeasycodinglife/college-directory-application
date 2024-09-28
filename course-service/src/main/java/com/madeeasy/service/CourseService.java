@@ -1,5 +1,6 @@
 package com.madeeasy.service;
 
+import com.madeeasy.dto.request.CourseAssignmentRequestDTO;
 import com.madeeasy.dto.request.CourseRequestDTO;
 import com.madeeasy.dto.response.CourseResponseDTO;
 import com.madeeasy.dto.response.ResponseDTO;
@@ -20,4 +21,7 @@ public interface CourseService {
     List<CourseResponseDTO> getCoursesByFacultyId(Long id);
 
     List<CourseResponseDTO> getCoursesByDepartmentId(Long id);
+
+    CourseResponseDTO courseAssignment(CourseAssignmentRequestDTO course);
+
 }

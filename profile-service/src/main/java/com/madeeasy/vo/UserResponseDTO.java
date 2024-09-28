@@ -1,13 +1,11 @@
-package com.madeeasy.dto.response;
+package com.madeeasy.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.madeeasy.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
 
@@ -17,7 +15,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserAuthResponseDTO implements Serializable {
+public class UserResponseDTO implements Serializable {
 
     private Long id;
     private String fullName;
@@ -25,8 +23,4 @@ public class UserAuthResponseDTO implements Serializable {
     private String password;
     private String phone;
     private Role role;
-    private String accessToken;
-    private String refreshToken;
-    private HttpStatus status;
-    private String message;
 }

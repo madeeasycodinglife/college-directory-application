@@ -1,6 +1,5 @@
 package com.madeeasy.dto.request;
 
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -25,10 +24,4 @@ public class CourseRequestDTO {
     private String courseCode;
     @NotBlank(message = "description cannot be blank")
     private String description;
-
-    @Nullable
-    private Long departmentId;
-
-    @Nullable
-    private Long facultyId;
 }

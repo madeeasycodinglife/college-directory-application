@@ -18,4 +18,6 @@ public interface UserService {
     UserResponseDTO getUserByEmailId(String emailId);
 
     UserResponseDTO findByFullNameAndRole(String fullName, Role role);
+
+    UserResponseDTO getUserById(Long id);
 }

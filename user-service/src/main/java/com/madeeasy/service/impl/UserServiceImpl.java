@@ -106,7 +106,6 @@ public class UserServiceImpl implements UserService {
 
 
         User userEntity = User.builder()
-                .id(UUID.randomUUID().toString())
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .password(rawOrEncodedPassword)
@@ -346,9 +345,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO findByFullNameAndRole(String fullName,Role role) {
-        User foundUser = this.userRepository.findByFullNameAndRole(fullName,role)
+    public UserResponseDTO findByFullNameAndRole(String fullName, Role role) {
+        User foundUser = this.userRepository.findByFullNameAndRole(fullName, role)
                 .orElseThrow(() -> new UserNotFoundException("User not found with fullName: " + fullName));
+        if (foundUser != null) {
+            return UserResponseDTO.builder()
+                    .id(foundUser.getId())
+                    .fullName(foundUser.getFullName())
+                    .email(foundUser.getEmail())
+                    .password(foundUser.getPassword())
+                    .phone(foundUser.getPhone())
+                    .role(foundUser.getRole())
+                    .build();
+        }
+        return null;
+    }
+
+    @Override
+    public UserResponseDTO getUserById(Long id) {
+
+        User foundUser = this.userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
         if (foundUser != null) {
             return UserResponseDTO.builder()
                     .id(foundUser.getId())

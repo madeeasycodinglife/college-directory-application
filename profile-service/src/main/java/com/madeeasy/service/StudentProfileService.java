@@ -19,4 +19,5 @@ public interface StudentProfileService {
 
     List<StudentProfileResponseDTO> getStudentsByStartYearAndEndYear(Integer startYear, Integer endYear);
 
+    StudentProfileResponseDTO getStudentById(Long id);
 }

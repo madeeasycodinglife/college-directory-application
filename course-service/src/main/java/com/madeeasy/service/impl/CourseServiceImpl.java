@@ -2,6 +2,7 @@ package com.madeeasy.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.madeeasy.dto.request.CourseAssignmentRequestDTO;
 import com.madeeasy.dto.request.CourseRequestDTO;
 import com.madeeasy.dto.response.CourseResponseDTO;
 import com.madeeasy.dto.response.ResponseDTO;
@@ -9,6 +10,8 @@ import com.madeeasy.entity.Course;
 import com.madeeasy.exception.CourseNotFoundException;
 import com.madeeasy.repository.CourseRepository;
 import com.madeeasy.service.CourseService;
+import com.madeeasy.vo.DepartmentResponseDTO;
+import com.madeeasy.vo.FacultyProfileResponseDTO;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,8 +55,6 @@ public class CourseServiceImpl implements CourseService {
                 .title(courseRequestDTO.getTitle())
                 .courseCode(courseRequestDTO.getCourseCode())
                 .description(courseRequestDTO.getDescription())
-                .facultyId(courseRequestDTO.getFacultyId())
-                .departmentId(courseRequestDTO.getDepartmentId())
                 .build();
 
         courseRepository.save(course);
@@ -63,8 +64,6 @@ public class CourseServiceImpl implements CourseService {
                 .title(courseRequestDTO.getTitle())
                 .courseCode(courseRequestDTO.getCourseCode())
                 .description(courseRequestDTO.getDescription())
-                .facultyId(courseRequestDTO.getFacultyId())
-                .departmentId(courseRequestDTO.getDepartmentId())
                 .build();
 
     }
@@ -214,6 +213,56 @@ public class CourseServiceImpl implements CourseService {
                         .departmentId(course.getDepartmentId())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CourseResponseDTO courseAssignment(CourseAssignmentRequestDTO course) {
+
+        // rest-call to depart-service to know if department exists
+        // http://localhost:8083/api/department/get-department-by-id/1
+
+        // rest-call to faculty-service to know if faculty exists
+        // http://localhost:8082/api/faculty-profile/get-by-id/1
+
+
+        String departmentUrl = "http://department-service/api/department/get-department-by-id/" + course.getDepartmentId();
+
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set("Authorization", "Bearer " + authToken);
+//        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        DepartmentResponseDTO departmentResponse =
+                restTemplate.exchange(departmentUrl, HttpMethod.GET, null, DepartmentResponseDTO.class)
+                        .getBody();
+
+
+        String facultyUrl = "http://profile-service/api/faculty-profile/get-by-id/" + course.getFacultyId();
+
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set("Authorization", "Bearer " + authToken);
+//        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        FacultyProfileResponseDTO facultyResponse = restTemplate.exchange(facultyUrl, HttpMethod.GET, null, FacultyProfileResponseDTO.class)
+                .getBody();
+
+
+        Course foundCourse = this.courseRepository.findById(course.getCourseId())
+                .orElseThrow(() -> new CourseNotFoundException("Course not found with id : " + course.getCourseId()));
+
+        foundCourse.setDepartmentId(course.getDepartmentId());
+
+        foundCourse.setFacultyId(course.getFacultyId());
+
+        this.courseRepository.save(foundCourse);
+
+        return CourseResponseDTO.builder()
+                .id(foundCourse.getId())
+                .title(foundCourse.getTitle())
+                .courseCode(foundCourse.getCourseCode())
+                .description(foundCourse.getDescription())
+                .facultyId(foundCourse.getFacultyId())
+                .departmentId(foundCourse.getDepartmentId())
+                .build();
     }
 
     private HttpEntity<String> createHttpEntityWithToken(String authorizationHeader) {

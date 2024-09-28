@@ -10,4 +10,6 @@ public interface AdministratorProfileService {
     AdministratorProfileResponseDTO createAdministratorProfile(MultipartFile file, AdministratorProfileRequestDTO administratorProfileRequestDTO) throws IOException;
 
     AdministratorProfileResponseDTO getPhotoById(Long id);
+
+    AdministratorProfileResponseDTO getAdministratorById(Long id);
 }
