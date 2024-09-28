@@ -65,3 +65,15 @@ resilience4j:
         retryCount: ${RESILIENCE4J_RETRY_MY_RETRY_RETRY_COUNT:3}
         waitDuration: ${RESILIENCE4J_RETRY_MY_RETRY_WAIT_DURATION:2s}
 
+
+
+security:
+  authorization:
+    paths:
+      - path: ${SECURITY_AUTHORIZATION_CREATE_ENROLLMENT_PATH:/api/enrollment/create}
+        method: ${SECURITY_AUTHORIZATION_CREATE_ENROLLMENT_METHOD:POST}
+        roles: ${SECURITY_AUTHORIZATION_CREATE_ENROLLMENT_ROLES:ADMINISTRATOR}
+
+
+
+

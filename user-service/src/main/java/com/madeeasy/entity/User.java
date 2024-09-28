@@ -18,12 +18,6 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence_generator")
-    @SequenceGenerator(
-            name = "user_sequence_generator",
-            sequenceName = "user_sequence",
-            allocationSize = 1
-    )
     private Long id;
     private String fullName;
     @Column(unique = true)

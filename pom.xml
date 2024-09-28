@@ -29,6 +29,7 @@
         <module>enrollment-service</module>
         <module>instance-service</module>
         <module>eureka-server</module>
+        <module>auth-service</module>
     </modules>
 
     <scm>

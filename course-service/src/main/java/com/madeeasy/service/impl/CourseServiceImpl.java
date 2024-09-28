@@ -225,25 +225,21 @@ public class CourseServiceImpl implements CourseService {
         // rest-call to faculty-service to know if faculty exists
         // http://localhost:8082/api/faculty-profile/get-by-id/1
 
+        // Get the authorization header from the request
+        String authorizationHeader = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+
+        // Create HttpEntity with the token
+        HttpEntity<String> requestEntity = createHttpEntityWithToken(authorizationHeader);
 
         String departmentUrl = "http://department-service/api/department/get-department-by-id/" + course.getDepartmentId();
 
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set("Authorization", "Bearer " + authToken);
-//        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
         DepartmentResponseDTO departmentResponse =
-                restTemplate.exchange(departmentUrl, HttpMethod.GET, null, DepartmentResponseDTO.class)
+                restTemplate.exchange(departmentUrl, HttpMethod.GET, requestEntity, DepartmentResponseDTO.class)
                         .getBody();
-
 
         String facultyUrl = "http://profile-service/api/faculty-profile/get-by-id/" + course.getFacultyId();
 
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set("Authorization", "Bearer " + authToken);
-//        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        FacultyProfileResponseDTO facultyResponse = restTemplate.exchange(facultyUrl, HttpMethod.GET, null, FacultyProfileResponseDTO.class)
+        FacultyProfileResponseDTO facultyResponse = restTemplate.exchange(facultyUrl, HttpMethod.GET, requestEntity, FacultyProfileResponseDTO.class)
                 .getBody();
 
 

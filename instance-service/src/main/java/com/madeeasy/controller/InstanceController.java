@@ -15,15 +15,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Validated
 @RestController
 @RequestMapping(path = "/api/instances")
 @RequiredArgsConstructor
-@Validated
 public class InstanceController {
 
     private final CourseInstanceService instanceService;
 
-    @PostMapping
+    @PostMapping(path = "/create")
     public ResponseEntity<?> createInstance(@Valid @RequestBody CourseInstanceRequestDTO instance) {
         CourseInstanceResponseDTO createdInstance = instanceService.createInstance(instance);
         if (createdInstance.getId() == null) {

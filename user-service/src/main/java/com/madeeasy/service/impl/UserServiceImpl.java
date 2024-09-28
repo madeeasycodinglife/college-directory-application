@@ -21,6 +21,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.http.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
@@ -29,7 +30,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     private final CacheManager cacheManager;
     private final UserRepository userRepository;
     private final HttpServletRequest httpServletRequest;
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Cacheable(value = USER, key = "#root.methodName", unless = "#result == null")
@@ -68,10 +68,10 @@ public class UserServiceImpl implements UserService {
         String rawOrEncodedPassword = user.getPassword();
 
         // Check if the password is already a valid bcrypt hash
-//        if (!passwordEncoder.matches(rawOrEncodedPassword, rawOrEncodedPassword)) {
-//            // If not, encrypt it
-//            rawOrEncodedPassword = passwordEncoder.encode(rawOrEncodedPassword);
-//        }
+        if (!passwordEncoder.matches(rawOrEncodedPassword, rawOrEncodedPassword)) {
+            // If not, encrypt it
+            rawOrEncodedPassword = passwordEncoder.encode(rawOrEncodedPassword);
+        }
 
 
         // Check if a user with the given email or phone already exists
@@ -106,6 +106,7 @@ public class UserServiceImpl implements UserService {
 
 
         User userEntity = User.builder()
+                .id(user.getId())
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .password(rawOrEncodedPassword)
@@ -175,6 +176,8 @@ public class UserServiceImpl implements UserService {
                         .build();
             }
 
+            log.info("UserPatchRequestDTO : {}", userDetails);
+
             if (userDetails.getEmail() != null && !userDetails.getEmail().isBlank()) {
                 userRequestDTO.setEmail(userDetails.getEmail());
             }
@@ -195,6 +198,7 @@ public class UserServiceImpl implements UserService {
                             .status(HttpStatus.BAD_REQUEST)
                             .build();
                 }
+                userRequestDTO.setRole(userDetails.getRole());
             }
 
             // Send update request to auth-service
@@ -206,6 +210,8 @@ public class UserServiceImpl implements UserService {
             headers.set("Authorization", "Bearer " + accessToken);
             headers.setContentType(MediaType.APPLICATION_JSON);
 
+            log.info("UserRequestDTO : {}", userRequestDTO);
+
             HttpEntity<UserRequestDTO> requestEntity = new HttpEntity<>(userRequestDTO, headers);
 
             // Send the request to auth-service
@@ -213,57 +219,51 @@ public class UserServiceImpl implements UserService {
                     restTemplate.exchange(
                             url, HttpMethod.PATCH, requestEntity, AuthResponse.class);
 
-            if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                AuthResponse authResponse = responseEntity.getBody();
-                assert authResponse != null;
 
-                // Update foundUser with the new details
-                if (userDetails.getFullName() != null && !userDetails.getFullName().isBlank()) {
-                    foundUser.setFullName(userDetails.getFullName());
-                }
-                if (userDetails.getEmail() != null && !userDetails.getEmail().isBlank()) {
-                    foundUser.setEmail(userDetails.getEmail());
-                }
-                if (userDetails.getPassword() != null && !userDetails.getPassword().isBlank()) {
-                    foundUser.setPassword(userDetails.getPassword());
-                }
-                if (userDetails.getPhone() != null && !userDetails.getPhone().isBlank()) {
-                    foundUser.setPhone(userDetails.getPhone());
-                }
-                if (userDetails.getRole() != null && !userDetails.getRole().isEmpty()) {
-                    // Ensure the roles collection is mutable
-                    // Create a mutable ArrayList
-                    Role role = Role.valueOf(userRequestDTO.getRole().toUpperCase());
-// Set the roles for the found user
-                    foundUser.setRole(role);
+            AuthResponse authResponse = responseEntity.getBody();
+            assert authResponse != null;
 
-                }
-                log.info("new update object : {}", foundUser);
-                // Save the updated user to the local repository
-                User updatedUser = this.userRepository.save(foundUser);
-
-                Objects.requireNonNull(this.cacheManager.getCache(USER)).evict(emailId);
-
-                // Return successful response with tokens
-                return UserAuthResponseDTO.builder()
-                        .id(updatedUser.getId())
-                        .fullName(updatedUser.getFullName())
-                        .email(updatedUser.getEmail())
-                        .password(updatedUser.getPassword())
-                        .phone(updatedUser.getPhone())
-                        .role(updatedUser.getRole())
-                        .accessToken((userDetails.getEmail() != null || userDetails.getRole() != null) ? authResponse.getAccessToken() : null)
-                        .refreshToken((userDetails.getEmail() != null || userDetails.getRole() != null) ? authResponse.getRefreshToken() : null)
-                        .build();
-
-            } else {
-                // Log error and return appropriate response if the auth-service call fails
-                log.error("Failed to update user in auth-service for email: {}. Response status: {}", emailId, responseEntity.getStatusCode());
-                return UserAuthResponseDTO.builder()
-                        .status(HttpStatus.valueOf(responseEntity.getStatusCodeValue()))
-                        .message("Failed to update user in auth-service for email: " + emailId)
-                        .build();
+            // Update foundUser with the new details
+            if (userDetails.getFullName() != null && !userDetails.getFullName().isBlank()) {
+                foundUser.setFullName(userDetails.getFullName());
             }
+            if (userDetails.getEmail() != null && !userDetails.getEmail().isBlank()) {
+                foundUser.setEmail(userDetails.getEmail());
+            }
+            if (userDetails.getPassword() != null && !userDetails.getPassword().isBlank()) {
+                foundUser.setPassword(userDetails.getPassword());
+            }
+            if (userDetails.getPhone() != null && !userDetails.getPhone().isBlank()) {
+                foundUser.setPhone(userDetails.getPhone());
+            }
+            if (userDetails.getRole() != null && !userDetails.getRole().isEmpty()) {
+                // Ensure the roles collection is mutable
+                // Create a mutable ArrayList
+                Role role = Role.valueOf(userDetails.getRole().toUpperCase());
+                // Set the roles for the found user
+                foundUser.setRole(role);
+
+            }
+
+            log.info("new update object : {}", foundUser);
+
+            // Save the updated user to the local repository
+            User updatedUser = this.userRepository.save(foundUser);
+
+            Objects.requireNonNull(this.cacheManager.getCache(USER)).evict(emailId);
+
+            // Return successful response with tokens
+            return UserAuthResponseDTO.builder()
+                    .id(updatedUser.getId())
+                    .fullName(updatedUser.getFullName())
+                    .email(updatedUser.getEmail())
+                    .password(updatedUser.getPassword())
+                    .phone(updatedUser.getPhone())
+                    .role(updatedUser.getRole())
+                    .accessToken((userDetails.getEmail() != null || userDetails.getRole() != null) ? authResponse.getAccessToken() : null)
+                    .refreshToken((userDetails.getEmail() != null || userDetails.getRole() != null) ? authResponse.getRefreshToken() : null)
+                    .build();
+
         }
         // Return null if the user was not found
         return null;

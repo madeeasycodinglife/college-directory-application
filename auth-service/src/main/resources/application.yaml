@@ -1,0 +1,89 @@
+server:
+  port: ${SERVER_PORT:8087}
+
+
+spring:
+  application:
+    name: auth-service
+  threads:
+    virtual:
+      enabled: true
+  output:
+    ansi:
+      enabled: ALWAYS
+
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:auth-service}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:sa}
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:create-drop}
+    show-sql: ${SPRING_JPA_SHOW_SQL:true}
+  h2:
+    console:
+      path: ${SPRING_H2_CONSOLE_PATH:/h2-console}
+      enabled: ${SPRING_H2_CONSOLE_ENABLED:true}
+      settings:
+        web-allow-others: true
+  mvc:
+    throw-exception-if-no-handler-found: ${SPRING_MVC_THROW_EXCEPTION_IF_NO_HANDLER_FOUND:true}
+  web:
+    resources:
+      add-mappings: ${SPRING_WEB_RESOURCES_ADD_MAPPINGS:false}
+
+eureka:
+  client:
+    register-with-eureka: ${EUREKA_CLIENT_REGISTER_WITH_EUREKA:true}
+    fetch-registry: ${EUREKA_CLIENT_FETCH_REGISTRY:true}
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+    registry-fetch-interval-seconds: ${EUREKA_CLIENT_REGISTRY_FETCH_INTERVAL_SECONDS:30}
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}  # Add the hostname property here
+    prefer-ip-address: ${EUREKA_INSTANCE_PREFER_IP_ADDRESS:true}
+
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      myCircuitBreaker:
+        registerHealthIndicator: ${RESILIENCE4J_CIRCUITBREAKER_MY_CIRCUITBREAKER_REGISTER_HEALTH_INDICATOR:true}
+        failureRateThreshold: ${RESILIENCE4J_CIRCUITBREAKER_MY_CIRCUITBREAKER_FAILURE_RATE_THRESHOLD:20}
+        minimumNumberOfCalls: ${RESILIENCE4J_CIRCUITBREAKER_MY_CIRCUITBREAKER_MINIMUM_NUMBER_OF_CALLS:5}
+        slidingWindowSize: ${RESILIENCE4J_CIRCUITBREAKER_MY_CIRCUITBREAKER_SLIDING_WINDOW_SIZE:10}
+        waitDurationInOpenState: ${RESILIENCE4J_CIRCUITBREAKER_MY_CIRCUITBREAKER_WAIT_DURATION_IN_OPEN_STATE:5s}
+        permittedNumberOfCallsInHalfOpenState: ${RESILIENCE4J_CIRCUITBREAKER_MY_CIRCUITBREAKER_PERMITTED_NUMBER_OF_CALLS_IN_HALF_OPEN_STATE:3}
+        automaticTransitionFromOpenToHalfOpenEnabled: ${RESILIENCE4J_CIRCUITBREAKER_MY_CIRCUITBREAKER_AUTOMATIC_TRANSITION_FROM_OPEN_TO_HALF_OPEN_ENABLED:true}
+        slidingWindowType: ${RESILIENCE4J_CIRCUITBREAKER_MY_CIRCUITBREAKER_SLIDING_WINDOW_TYPE:COUNT_BASED}
+
+  retry:
+    instances:
+      myRetry:
+        registerHealthIndicator: ${RESILIENCE4J_RETRY_MY_RETRY_REGISTER_HEALTH_INDICATOR:true}
+        retryCount: ${RESILIENCE4J_RETRY_MY_RETRY_RETRY_COUNT:3}
+        waitDuration: ${RESILIENCE4J_RETRY_MY_RETRY_WAIT_DURATION:2s}
+
+security:
+  authorization:
+    paths:
+      - path: /auth-service/sign-up
+        method: POST
+        roles: ${SECURITY_AUTHORIZATION_PATHS_SIGNUP_ROLES:}
+      - path: /auth-service/sign-in
+        method: POST
+        roles: ${SECURITY_AUTHORIZATION_PATHS_SIGNIN_ROLES:}
+      - path: /auth-service/log-out
+        method: POST
+        roles: ${SECURITY_AUTHORIZATION_PATHS_LOGOUT_ROLES:}
+      - path: /auth-service/validate-access-token/**
+        method: POST
+        roles: ${SECURITY_AUTHORIZATION_PATHS_VALIDATE_ACCESS_TOKEN_ROLES:}
+      - path: /auth-service/refresh-token/**
+        method: POST
+        roles: ${SECURITY_AUTHORIZATION_PATHS_REFRESH_TOKEN_ROLES:}
+      - path: /auth-service/partial-update/**
+        method: PATCH
+        roles: ${SECURITY_AUTHORIZATION_PATHS_PARTIAL_UPDATE_ROLES:STUDENT,FACULTY_MEMBER,ADMINISTRATOR}

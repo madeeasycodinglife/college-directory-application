@@ -11,9 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtUtils {
@@ -21,6 +21,30 @@ public class JwtUtils {
     private static final String SECRET_KEY = "1adf0a4782f6e5674a79747fe58ea851b7581658d3715b12f4e0b12e999f307e";
     private final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
+
+    public String generateAccessToken(String email, String role) {
+        return Jwts.builder()
+                .id(UUID.randomUUID().toString())
+                .subject(email)
+                .claim("roles", role)
+                .issuer("madeeasycodinglife")
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(3)))
+                .signWith(getSignKey())
+                .compact();
+    }
+
+    public String generateRefreshToken(String email, String role) {
+        return Jwts.builder()
+                .id(UUID.randomUUID().toString())
+                .subject(email)
+                .claim("roles", role)
+                .issuer("madeeasycodinglife")
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(5)))
+                .signWith(getSignKey())
+                .compact();
+    }
 
     public Claims getAllClaims(String token) {
 
@@ -83,21 +107,15 @@ public class JwtUtils {
     }
 
 
-    public List<String> getRolesFromToken(String token) {
+    public String getRoleFromToken(String token) {
         Claims claims = getAllClaims(token);
 
         Object rolesObject = claims.get("roles");
 
-        List<String> roles = new ArrayList<>();
-
-        if (rolesObject instanceof List<?>) {
-            for (Object role : (List<?>) rolesObject) {
-                if (role instanceof String) {
-                    roles.add((String) role);
-                }
-                // Add additional checks or handling if needed
-            }
+        if (rolesObject instanceof String) {
+            return (String) rolesObject;
+        } else {
+            return null;
         }
-        return roles;
     }
 }
