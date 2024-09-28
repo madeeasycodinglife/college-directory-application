@@ -28,6 +28,7 @@
         <module>course-service</module>
         <module>enrollment-service</module>
         <module>instance-service</module>
+        <module>eureka-server</module>
     </modules>
 
     <scm>
@@ -118,6 +119,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
     </dependencies>

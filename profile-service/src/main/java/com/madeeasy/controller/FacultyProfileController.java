@@ -2,7 +2,6 @@ package com.madeeasy.controller;
 
 
 import com.madeeasy.dto.request.FacultyProfileRequestDTO;
-import com.madeeasy.dto.response.AdministratorProfileResponseDTO;
 import com.madeeasy.dto.response.FacultyProfileResponseDTO;
 import com.madeeasy.service.FacultyProfileService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/faculty-profile")
@@ -41,4 +41,13 @@ public class FacultyProfileController {
                 .body(new ByteArrayResource(facultyProfileResponseDTO.getPhoto()));
     }
 
+    // /{id}/courses: Get all courses taught by the faculty member.
+
+    @GetMapping(path = "/{id}/courses")
+    public ResponseEntity<?> getCoursesByFacultyId(@PathVariable Long id) {
+        List<FacultyProfileResponseDTO> courses = this.facultyProfileService.getCoursesByFacultyId(id);
+
+        return ResponseEntity.ok()
+                .body(courses);
+    }
 }
