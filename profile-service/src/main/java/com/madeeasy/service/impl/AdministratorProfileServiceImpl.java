@@ -91,7 +91,7 @@ public class AdministratorProfileServiceImpl implements AdministratorProfileServ
 
                     return AdministratorProfileResponseDTO.builder()
                             .status(HttpStatus.BAD_REQUEST)
-                            .message("Bad request : " + errorMessage)
+                            .message(errorMessage)
                             .build();
                 } catch (Exception e) {
                     log.error("Failed to parse the error response", e);
@@ -111,7 +111,7 @@ public class AdministratorProfileServiceImpl implements AdministratorProfileServ
 
                     return AdministratorProfileResponseDTO.builder()
                             .status(HttpStatus.BAD_REQUEST)
-                            .message("Bad request : " + errorMessage)
+                            .message(errorMessage)
                             .build();
                 } catch (Exception e) {
                     log.error("Failed to parse the error response", e);
@@ -122,7 +122,7 @@ public class AdministratorProfileServiceImpl implements AdministratorProfileServ
         // Fallback response if the exception is not HttpClientErrorException or any other case
         return AdministratorProfileResponseDTO.builder()
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .message("Sorry !! Your request failed as Auth Service is unavailable. Please try again later.")
+                .message("Sorry !! Service is unavailable. Please try again later.")
                 .build();
 
     }

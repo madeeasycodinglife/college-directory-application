@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
+
 
 @Validated
 @RestController
@@ -46,6 +49,14 @@ public class StudentProfileController {
         }
 
         StudentProfileResponseDTO studentProfile = studentProfileService.createStudentProfile(file, studentProfileRequestDTO);
+
+        if (studentProfile.getStatus() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntity.badRequest().body(studentProfile);
+        } else if (studentProfile.getStatus() == NOT_FOUND) {
+            return ResponseEntity.status(NOT_FOUND).body(studentProfile);
+        } else if (studentProfile.getStatus() == SERVICE_UNAVAILABLE) {
+            return ResponseEntity.status(SERVICE_UNAVAILABLE).body(studentProfile);
+        }
 
         // Prepare the response with the image and additional data
         return ResponseEntity.ok()

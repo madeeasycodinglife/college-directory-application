@@ -109,7 +109,7 @@ public class CourseInstanceServiceImpl implements CourseInstanceService {
 
                     return CourseInstanceResponseDTO.builder()
                             .status(HttpStatus.BAD_REQUEST)
-                            .message("Bad request : " + errorMessage)
+                            .message(errorMessage)
                             .build();
                 } catch (Exception e) {
                     log.error("Failed to parse the error response", e);
@@ -129,7 +129,7 @@ public class CourseInstanceServiceImpl implements CourseInstanceService {
 
                     return CourseInstanceResponseDTO.builder()
                             .status(HttpStatus.BAD_REQUEST)
-                            .message("Bad request : " + errorMessage)
+                            .message(errorMessage)
                             .build();
                 } catch (Exception e) {
                     log.error("Failed to parse the error response", e);
@@ -139,7 +139,7 @@ public class CourseInstanceServiceImpl implements CourseInstanceService {
 
         // Fallback response if the exception is not HttpClientErrorException or any other case
         return CourseInstanceResponseDTO.builder()
-                .message("Sorry !! Course Instance creation failed as Course Service is unavailable. Please try again later.")
+                .message("Sorry !! Service is unavailable. Please try again later.")
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
                 .build();
     }

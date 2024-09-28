@@ -26,6 +26,15 @@ public class EnrollmentServiceController {
     @PostMapping(path = "/create")
     public ResponseEntity<?> createEnrollment(@Valid @RequestBody EnrollmentRequestDTO enrollmentRequestDTO) {
         EnrollmentResponseDTO enrollmentResponseDTO = this.enrollmentService.createEnrollment(enrollmentRequestDTO);
+
+        if (enrollmentResponseDTO.getStatus() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(enrollmentResponseDTO);
+        } else if (enrollmentResponseDTO.getStatus() == HttpStatus.NOT_FOUND) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(enrollmentResponseDTO);
+        }else if (enrollmentResponseDTO.getStatus() == HttpStatus.SERVICE_UNAVAILABLE) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(enrollmentResponseDTO);
+        }
+
         return ResponseEntity.status(HttpStatus.OK).body(enrollmentResponseDTO);
     }
 

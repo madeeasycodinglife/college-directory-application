@@ -1,14 +1,13 @@
 package com.madeeasy.controller;
 
 import com.madeeasy.dto.request.AdministratorProfileRequestDTO;
-import com.madeeasy.dto.request.StudentProfileRequestDTO;
 import com.madeeasy.dto.response.AdministratorProfileResponseDTO;
-import com.madeeasy.dto.response.StudentProfileResponseDTO;
 import com.madeeasy.service.AdministratorProfileService;
 import com.madeeasy.util.ValidationUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -28,9 +27,18 @@ public class AdministratorProfileController {
 
     @PostMapping(path = "/create")
     public ResponseEntity<?> createAdministratorProfile(@RequestParam("file") MultipartFile file,
-                                               @Valid AdministratorProfileRequestDTO administratorProfileRequestDTO) throws IOException {
+                                                        @Valid AdministratorProfileRequestDTO administratorProfileRequestDTO) throws IOException {
         AdministratorProfileResponseDTO administratorProfile = this.administratorProfileService.createAdministratorProfile(file, administratorProfileRequestDTO);
 
+        if (administratorProfile.getStatus() == HttpStatus.CONFLICT) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(administratorProfile);
+        } else if (administratorProfile.getStatus() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(administratorProfile);
+        } else if (administratorProfile.getStatus() == HttpStatus.NOT_FOUND) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(administratorProfile);
+        } else if (administratorProfile.getStatus() == HttpStatus.SERVICE_UNAVAILABLE) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(administratorProfile);
+        }
         // Prepare the response with the image and additional data
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -45,10 +53,12 @@ public class AdministratorProfileController {
             return ResponseEntity.badRequest().body(errors);
         }
         AdministratorProfileResponseDTO administratorProfileResponseDTO = this.administratorProfileService.getPhotoById(id);
+
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(administratorProfileResponseDTO.getType()))
                 .body(new ByteArrayResource(administratorProfileResponseDTO.getPhoto()));
     }
+
     @GetMapping(path = "/get-by-id/{id}")
     public ResponseEntity<?> getAdministratorById(@PathVariable Long id) {
         Map<String, String> errors = ValidationUtils.validatePositiveInteger(id.intValue(), "id");

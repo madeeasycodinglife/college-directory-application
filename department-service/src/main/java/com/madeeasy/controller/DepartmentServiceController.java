@@ -25,6 +25,11 @@ public class DepartmentServiceController {
     @PostMapping(path = "/create")
     public ResponseEntity<?> createCourse(@Valid @RequestBody DepartmentRequestDTO departmentRequestDTO) {
         DepartmentResponseDTO createdDepartment = this.departmentService.createDepartment(departmentRequestDTO);
+        if (createdDepartment.getStatus() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createdDepartment);
+        } else if (createdDepartment.getStatus() == HttpStatus.NOT_FOUND) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createdDepartment);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDepartment);
     }
 

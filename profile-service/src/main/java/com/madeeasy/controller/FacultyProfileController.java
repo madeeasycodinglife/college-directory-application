@@ -8,6 +8,7 @@ import com.madeeasy.util.ValidationUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +33,14 @@ public class FacultyProfileController {
     public ResponseEntity<?> createFacultyProfile(@RequestParam("file") MultipartFile file,
                                                   @Valid FacultyProfileRequestDTO facultyProfileRequestDTO) throws IOException {
         FacultyProfileResponseDTO facultyProfileResponseDTO = this.facultyProfileService.createFacultyProfile(file, facultyProfileRequestDTO);
+
+        if (facultyProfileResponseDTO.getStatus() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntity.badRequest().body(facultyProfileResponseDTO);
+        } else if (facultyProfileResponseDTO.getStatus() == HttpStatus.NOT_FOUND) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(facultyProfileResponseDTO);
+        } else if (facultyProfileResponseDTO.getStatus() == HttpStatus.SERVICE_UNAVAILABLE) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(facultyProfileResponseDTO);
+        }
 
         // Prepare the response with the image and additional data
         return ResponseEntity.ok()

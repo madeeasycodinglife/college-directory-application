@@ -215,6 +215,7 @@ public class CourseServiceImpl implements CourseService {
                 .collect(Collectors.toList());
     }
 
+    @CircuitBreaker(name = "myCircuitBreaker", fallbackMethod = "courseAssignmentFallbackMethod")
     @Override
     public CourseResponseDTO courseAssignment(CourseAssignmentRequestDTO course) {
 
@@ -265,6 +266,68 @@ public class CourseServiceImpl implements CourseService {
                 .build();
     }
 
+
+    public CourseResponseDTO courseAssignmentFallbackMethod(
+            CourseAssignmentRequestDTO course,
+            Throwable t) {
+
+
+        log.error("message : {}", t.getMessage());
+
+        // Check if the throwable is an instance of HttpClientErrorException
+        if (t instanceof HttpClientErrorException exception) {
+            if (exception.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+                try {
+                    // Parse the response body as JSON
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode jsonNode = objectMapper.readTree(exception.getResponseBodyAsString());
+
+                    // Extract specific fields from the JSON, such as 'message' and 'status'
+                    String errorMessage = jsonNode.path("message").asText();
+                    String errorStatus = jsonNode.path("status").asText();
+
+                    // Log the extracted information
+                    log.error("message : {} , status : {}", errorMessage, errorStatus);
+
+                    return CourseResponseDTO.builder()
+                            .status(HttpStatus.BAD_REQUEST)
+                            .message(errorMessage)
+                            .build();
+                } catch (Exception e) {
+                    log.error("Failed to parse the error response", e);
+                }
+            } else {
+                try {
+                    // Parse the response body as JSON
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode jsonNode = objectMapper.readTree(exception.getResponseBodyAsString());
+
+                    // Extract specific fields from the JSON, such as 'message' and 'status'
+                    String errorMessage = jsonNode.path("message").asText();
+                    String errorStatus = jsonNode.path("status").asText();
+
+                    // Log the extracted information
+                    log.error("message : {} , status : {}", errorMessage, errorStatus);
+
+                    return CourseResponseDTO.builder()
+                            .status(HttpStatus.BAD_REQUEST)
+                            .message(errorMessage)
+                            .build();
+                } catch (Exception e) {
+                    log.error("Failed to parse the error response", e);
+                }
+            }
+        }
+
+        // Fallback response if the exception is not HttpClientErrorException or any other case
+        return CourseResponseDTO.builder()
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .message("Sorry !! Service is unavailable. Please try again later.")
+                .build();
+
+    }
+
+
     private HttpEntity<String> createHttpEntityWithToken(String authorizationHeader) {
         HttpHeaders headers = new HttpHeaders();
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -294,7 +357,7 @@ public class CourseServiceImpl implements CourseService {
 
                     return ResponseDTO.builder()
                             .status(HttpStatus.BAD_REQUEST)
-                            .message("Bad request : " + errorMessage)
+                            .message(errorMessage)
                             .build();
                 } catch (Exception e) {
                     log.error("Failed to parse the error response", e);
@@ -318,7 +381,7 @@ public class CourseServiceImpl implements CourseService {
                     }
                     return ResponseDTO.builder()
                             .status(HttpStatus.BAD_REQUEST)
-                            .message("Bad request : " + errorMessage)
+                            .message(errorMessage)
                             .build();
                 } catch (Exception e) {
                     log.error("Failed to parse the error response", e);

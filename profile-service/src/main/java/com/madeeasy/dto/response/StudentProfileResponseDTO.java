@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Data
 @Builder
@@ -20,6 +21,8 @@ public class StudentProfileResponseDTO {
     @JsonIgnore
     private String type;
     private Long departmentId;
-    private int startYear;
-    private int endYear;
+    private Integer startYear;
+    private Integer endYear;
+    private HttpStatus status;
+    private String message;
 }

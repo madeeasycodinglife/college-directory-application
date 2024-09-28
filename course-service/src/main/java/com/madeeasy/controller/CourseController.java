@@ -28,12 +28,23 @@ public class CourseController {
     @PostMapping(path = "/create")
     public ResponseEntity<?> createCourse(@Valid @RequestBody CourseRequestDTO course) {
         CourseResponseDTO createdCourse = courseService.createCourse(course);
+        if (createdCourse.getStatus() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createdCourse);
+        } else if (createdCourse.getStatus() == HttpStatus.NOT_FOUND) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createdCourse);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCourse);
     }
 
     @PatchMapping(path = "/course-assignment")
     public ResponseEntity<?> courseAssignment(@Valid @RequestBody CourseAssignmentRequestDTO course) {
         CourseResponseDTO updatedCourse = courseService.courseAssignment(course);
+
+        if (updatedCourse.getStatus() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(updatedCourse);
+        } else if (updatedCourse.getStatus() == HttpStatus.NOT_FOUND) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(updatedCourse);
+        }
         return ResponseEntity.status(HttpStatus.OK).body(updatedCourse);
     }
 

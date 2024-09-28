@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Data
 @Builder
@@ -22,4 +23,6 @@ public class FacultyProfileResponseDTO {
     private String type;
     private String officeHours;
     private Long departmentId;
+    private HttpStatus status;
+    private String message;
 }
