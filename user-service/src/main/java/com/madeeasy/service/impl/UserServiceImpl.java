@@ -104,21 +104,6 @@ public class UserServiceImpl implements UserService {
                     .build();
         }
 
-//        List<Role> roles = new ArrayList<>();
-//        if (normalizedRoles.size() == 1) {
-//            if (normalizedRoles.contains(Role.STUDENT.name())) {
-//                roles.add(Role.STUDENT);
-//            }
-//            if (normalizedRoles.contains(Role.FACULTY_MEMBER.name())) {
-//                roles.add(Role.FACULTY_MEMBER);
-//            }
-//            if (normalizedRoles.contains(Role.ADMINISTRATOR.name())) {
-//                roles.add(Role.ADMINISTRATOR);
-//            }
-//        } else {
-//            roles.addAll(Arrays.asList(Role.STUDENT, Role.FACULTY_MEMBER, Role.ADMINISTRATOR));  // use according to the requirements
-//        }
-
 
         User userEntity = User.builder()
                 .id(UUID.randomUUID().toString())

@@ -1,5 +1,8 @@
 package com.madeeasy.exception.handler;
 
+import com.madeeasy.exception.AdministratorNotFoundException;
+import com.madeeasy.exception.FacultyNotFoundException;
+import com.madeeasy.exception.StudentNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
@@ -121,6 +124,38 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             }
         }
         return "Data integrity violation error occurred.";
+    }
+
+
+    @ExceptionHandler(StudentNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleStudentNotFoundException(StudentNotFoundException ex) {
+        log.warn("Student not found with id: {}", ex.getMessage());
+        Map<String, Object> errorResponse = Map.of(
+                "status", HttpStatus.NOT_FOUND,
+                "message", ex.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AdministratorNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleCourseNotFoundException(AdministratorNotFoundException ex) {
+        log.warn("administrator not found with id: {}", ex.getMessage());
+        Map<String, Object> errorResponse = Map.of(
+                "status", HttpStatus.NOT_FOUND,
+                "message", ex.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+
+    @ExceptionHandler(FacultyNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleCourseNotFoundException(FacultyNotFoundException ex) {
+        log.warn("faculty not found with id: {}", ex.getMessage());
+        Map<String, Object> errorResponse = Map.of(
+                "status", HttpStatus.NOT_FOUND,
+                "message", ex.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
 //    @ExceptionHandler(Exception.class)
