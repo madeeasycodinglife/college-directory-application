@@ -8,6 +8,7 @@ import com.madeeasy.repository.FacultyProfileRepository;
 import com.madeeasy.service.FacultyProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FacultyProfileServiceImpl implements FacultyProfileService {
     private final FacultyProfileRepository facultyProfileRepository;
+    private final RestTemplate restTemplate;
 
     @Override
     public FacultyProfileResponseDTO createFacultyProfile(MultipartFile file,
@@ -54,7 +56,7 @@ public class FacultyProfileServiceImpl implements FacultyProfileService {
 
     @Override
     public List<FacultyProfileResponseDTO> getCoursesByFacultyId(Long id) {
-//        this.facultyProfileRepository.
+        //  rest-call to the course service to get the list of courses taught by the faculty
         return null;
     }
 }

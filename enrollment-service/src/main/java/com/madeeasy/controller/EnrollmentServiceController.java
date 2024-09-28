@@ -28,4 +28,16 @@ public class EnrollmentServiceController {
         List<EnrollmentResponseDTO> enrollments = this.enrollmentService.getAllEnrollments();
         return ResponseEntity.status(HttpStatus.OK).body(enrollments);
     }
+
+    @GetMapping(path = "/get-enrollments-by-course-id/{courseId}")
+    public ResponseEntity<?> getEnrollmentByCourseId(@PathVariable Long courseId) {
+        List<EnrollmentResponseDTO> enrollments = this.enrollmentService.getEnrollmentByCourseId(courseId);
+        return ResponseEntity.status(HttpStatus.OK).body(enrollments);
+    }
+
+    @GetMapping(path = "/get-enrollments-by-student-id/{studentId}")
+    public ResponseEntity<?> getEnrollmentsByStudentId(@PathVariable Long studentId) {
+        List<EnrollmentResponseDTO> enrollments = this.enrollmentService.getEnrollmentsByStudentId(studentId);
+        return ResponseEntity.status(HttpStatus.OK).body(enrollments);
+    }
 }

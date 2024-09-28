@@ -24,7 +24,7 @@ public class CourseController {
     private final CourseService courseService;
 
 
-    @PostMapping
+    @PostMapping(path = "/create")
     public ResponseEntity<?> createCourse(@Valid @RequestBody CourseRequestDTO course) {
         CourseResponseDTO createdCourse = courseService.createCourse(course);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCourse);
@@ -62,6 +62,18 @@ public class CourseController {
         }
         CourseResponseDTO course = courseService.getCourseByCourseCode(courseCode);
         return ResponseEntity.ok(course);
+    }
+
+    @GetMapping(path = "/faculty/{id}")
+    public ResponseEntity<?> getCoursesByFacultyId(@PathVariable Long id) {
+        List<CourseResponseDTO> courses = courseService.getCoursesByFacultyId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(courses);
+    }
+
+
+    public ResponseEntity<?> getCoursesByDepartmentId(@PathVariable Long id) {
+        List<CourseResponseDTO> courses = courseService.getCoursesByDepartmentId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(courses);
     }
 
     @DeleteMapping("/{id}")

@@ -34,6 +34,7 @@ public class Course implements Serializable {
     private String description;
 
     private Long departmentId;
+
     private Long facultyId;
 
 }

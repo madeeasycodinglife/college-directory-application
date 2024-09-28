@@ -52,6 +52,8 @@ public class CourseServiceImpl implements CourseService {
                 .title(courseRequestDTO.getTitle())
                 .courseCode(courseRequestDTO.getCourseCode())
                 .description(courseRequestDTO.getDescription())
+                .facultyId(courseRequestDTO.getFacultyId())
+                .departmentId(courseRequestDTO.getDepartmentId())
                 .build();
 
         courseRepository.save(course);
@@ -61,6 +63,8 @@ public class CourseServiceImpl implements CourseService {
                 .title(courseRequestDTO.getTitle())
                 .courseCode(courseRequestDTO.getCourseCode())
                 .description(courseRequestDTO.getDescription())
+                .facultyId(courseRequestDTO.getFacultyId())
+                .departmentId(courseRequestDTO.getDepartmentId())
                 .build();
 
     }
@@ -83,6 +87,8 @@ public class CourseServiceImpl implements CourseService {
                         .title(course.getTitle())
                         .courseCode(course.getCourseCode())
                         .description(course.getDescription())
+                        .facultyId(course.getFacultyId())
+                        .departmentId(course.getDepartmentId())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -99,6 +105,8 @@ public class CourseServiceImpl implements CourseService {
                 .title(course.getTitle())
                 .courseCode(course.getCourseCode())
                 .description(course.getDescription())
+                .facultyId(course.getFacultyId())
+                .departmentId(course.getDepartmentId())
                 .build();
     }
 
@@ -114,6 +122,8 @@ public class CourseServiceImpl implements CourseService {
                 .title(course.getTitle())
                 .courseCode(course.getCourseCode())
                 .description(course.getDescription())
+                .facultyId(course.getFacultyId())
+                .departmentId(course.getDepartmentId())
                 .build();
     }
 
@@ -170,6 +180,40 @@ public class CourseServiceImpl implements CourseService {
         logger.info("Course instance deleted successfully for course ID: {}", id);
 
         return new ResponseDTO("Course with ID " + id + " has been successfully deleted.", HttpStatus.OK);
+    }
+
+    @Override
+    public List<CourseResponseDTO> getCoursesByFacultyId(Long id) {
+
+        List<Course> coursesByFacultyId = this.courseRepository.findByFacultyId(id);
+        log.info("{}", coursesByFacultyId);
+        return coursesByFacultyId.stream()
+                .map(course -> CourseResponseDTO.builder()
+                        .id(course.getId())
+                        .title(course.getTitle())
+                        .courseCode(course.getCourseCode())
+                        .description(course.getDescription())
+                        .facultyId(course.getFacultyId())
+                        .departmentId(course.getDepartmentId())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CourseResponseDTO> getCoursesByDepartmentId(Long id) {
+
+        List<Course> coursesByDepartmentId = this.courseRepository.findByDepartmentId(id);
+        log.info("{}", coursesByDepartmentId);
+        return coursesByDepartmentId.stream()
+                .map(course -> CourseResponseDTO.builder()
+                        .id(course.getId())
+                        .title(course.getTitle())
+                        .courseCode(course.getCourseCode())
+                        .description(course.getDescription())
+                        .facultyId(course.getFacultyId())
+                        .departmentId(course.getDepartmentId())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private HttpEntity<String> createHttpEntityWithToken(String authorizationHeader) {

@@ -42,4 +42,30 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<EnrollmentResponseDTO> getEnrollmentByCourseId(Long courseId) {
+
+        List<Enrollment> enrollments = this.enrollmentRepository.findByCourseId(courseId);
+        return enrollments.stream()
+                .map(enrollment -> EnrollmentResponseDTO.builder()
+                        .id(enrollment.getId())
+                        .studentId(enrollment.getStudentId())
+                        .courseId(enrollment.getCourseId())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EnrollmentResponseDTO> getEnrollmentsByStudentId(Long studentId) {
+
+        List<Enrollment> enrollments = this.enrollmentRepository.findByStudentId(studentId);
+        return enrollments.stream()
+                .map(enrollment -> EnrollmentResponseDTO.builder()
+                        .id(enrollment.getId())
+                        .studentId(enrollment.getStudentId())
+                        .courseId(enrollment.getCourseId())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

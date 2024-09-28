@@ -10,4 +10,8 @@ public interface EnrollmentService {
     EnrollmentResponseDTO createEnrollment(EnrollmentRequestDTO enrollmentRequestDTO);
 
     List<EnrollmentResponseDTO> getAllEnrollments();
+
+    List<EnrollmentResponseDTO> getEnrollmentByCourseId(Long courseId);
+
+    List<EnrollmentResponseDTO> getEnrollmentsByStudentId(Long studentId);
 }
