@@ -1,7 +1,5 @@
 package com.madeeasy.util;
 
-import com.madeeasy.entity.Role;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -30,16 +28,24 @@ public class ValidationUtils {
         return errors;
     }
 
-    public static Map<String, String> validateRole(String role) {
+    public static Map<String, String> validatePositiveInteger(Integer value, String fieldName) {
         Map<String, String> errors = new HashMap<>();
-        if (role == null || role.isBlank()) {
-            errors.put("Role", "Role must not be blank");
-        } else {
-            try {
-                Role.valueOf(role.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                errors.put("Role", "Invalid role: " + role);
-            }
+        if (value == null || value <= 0) {
+            errors.put(fieldName, fieldName + " must be a positive integer");
+        }
+        return errors;
+    }
+    public static Map<String, String> validateYear(String year, String fieldName) {
+        Map<String, String> errors = new HashMap<>();
+        if (year == null || year.isBlank()) {
+            errors.put(fieldName, fieldName + " must not be blank");
+            return errors;
+        }
+
+        // Check if the year is a 4-digit number or greater
+        String yearRegex = "^(\\d{4,})$";
+        if (!Pattern.matches(yearRegex, year)) {
+            errors.put(fieldName, fieldName + " must be a 4-digit number or greater");
         }
         return errors;
     }

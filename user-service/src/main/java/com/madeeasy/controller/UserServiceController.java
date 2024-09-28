@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Validated
 @RestController
 @RequestMapping(path = "/user-service")
 @RequiredArgsConstructor
-@Validated
 public class UserServiceController {
 
     private final UserService userService;
@@ -74,10 +74,21 @@ public class UserServiceController {
 
     @GetMapping(path = "/get-by-full-name-and-role/{fullName}/{role}")
     public ResponseEntity<?> findByFullNameAndRole(@PathVariable("fullName") String fullName, @PathVariable String role) {
+        // Validate the role
+        Map<String, String> roleValidationErrors = ValidationUtils.validateRole(role);
+        if (!roleValidationErrors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(roleValidationErrors);
+        }
+
+        // Proceed with finding the user by full name and role
         UserResponseDTO user = this.userService.findByFullNameAndRole(fullName, Role.valueOf(role.toUpperCase()));
+
+
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with fullName: " + fullName);
         }
+
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
+
 }
