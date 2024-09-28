@@ -1,5 +1,6 @@
 package com.madeeasy.repository;
 
+import com.madeeasy.entity.Role;
 import com.madeeasy.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,4 +20,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByEmail(String emailId);
 
     boolean existsByPhone(String phone);
+
+    Optional<User> findByFullNameAndRole(String fullName, Role role);
 }

@@ -4,6 +4,7 @@ import com.madeeasy.dto.request.UserPatchRequestDTO;
 import com.madeeasy.dto.request.UserRequestDTO;
 import com.madeeasy.dto.response.UserAuthResponseDTO;
 import com.madeeasy.dto.response.UserResponseDTO;
+import com.madeeasy.entity.Role;
 import com.madeeasy.service.UserService;
 import com.madeeasy.util.ValidationUtils;
 import jakarta.validation.Valid;
@@ -67,6 +68,15 @@ public class UserServiceController {
         UserResponseDTO user = this.userService.getUserByEmailId(emailId);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with emailId: " + emailId);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @GetMapping(path = "/get-by-full-name-and-role/{fullName}/{role}")
+    public ResponseEntity<?> findByFullNameAndRole(@PathVariable("fullName") String fullName, @PathVariable String role) {
+        UserResponseDTO user = this.userService.findByFullNameAndRole(fullName, Role.valueOf(role.toUpperCase()));
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with fullName: " + fullName);
         }
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }

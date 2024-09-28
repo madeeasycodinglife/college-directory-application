@@ -360,6 +360,23 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    public UserResponseDTO findByFullNameAndRole(String fullName,Role role) {
+        User foundUser = this.userRepository.findByFullNameAndRole(fullName,role)
+                .orElseThrow(() -> new UserNotFoundException("User not found with fullName: " + fullName));
+        if (foundUser != null) {
+            return UserResponseDTO.builder()
+                    .id(foundUser.getId())
+                    .fullName(foundUser.getFullName())
+                    .email(foundUser.getEmail())
+                    .password(foundUser.getPassword())
+                    .phone(foundUser.getPhone())
+                    .role(foundUser.getRole())
+                    .build();
+        }
+        return null;
+    }
+
     private User getByEmailId(String emailId) {
         return this.userRepository.findByEmail(emailId)
                 .orElse(null);
