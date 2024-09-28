@@ -29,6 +29,8 @@ public class DepartmentServiceController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createdDepartment);
         } else if (createdDepartment.getStatus() == HttpStatus.NOT_FOUND) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createdDepartment);
+        } else if (createdDepartment.getStatus() == HttpStatus.SERVICE_UNAVAILABLE) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(createdDepartment);
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDepartment);
     }
