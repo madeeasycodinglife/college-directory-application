@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 
 
@@ -91,8 +90,7 @@ public class FacultyProfileController {
                 .body(facultyProfileResponseDTO);
     }
 
-// /{id}/courses: Get all courses taught by the faculty member.
-
+    // this endpoint has been implemented in the course-service
     @GetMapping(path = "/{id}/courses")
     public ResponseEntity<?> getCoursesByFacultyId(@PathVariable Long id) {
         Map<String, String> errors = ValidationUtils.validatePositiveInteger(id.intValue(), "id");

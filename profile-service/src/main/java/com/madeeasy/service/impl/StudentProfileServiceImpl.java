@@ -33,10 +33,6 @@ public class StudentProfileServiceImpl implements StudentProfileService {
     private final StudentProfileRepository studentProfileRepository;
     private final RestTemplate restTemplate;
 
-    @Override
-    public StudentProfileResponseDTO getStudentProfile(Long id) {
-        return null;
-    }
 
     @CircuitBreaker(name = "myCircuitBreaker", fallbackMethod = "createStudentProfileFallbackMethod")
     @Override
@@ -164,6 +160,11 @@ public class StudentProfileServiceImpl implements StudentProfileService {
     public List<StudentProfileResponseDTO> getStudentsByDepartmentId(Long id) {
 
         List<StudentProfile> students = this.studentProfileRepository.findByDepartmentId(id);
+
+        if (students.isEmpty()) {
+            throw new StudentNotFoundException("Student Not found with departmentId : " + id);
+        }
+
         return students.stream()
                 .map(student -> StudentProfileResponseDTO.builder()
                         .id(student.getId())
@@ -180,6 +181,9 @@ public class StudentProfileServiceImpl implements StudentProfileService {
     public List<StudentProfileResponseDTO> getStudentsByStartYearAndEndYear(Integer startYear, Integer endYear) {
 
         List<StudentProfile> students = this.studentProfileRepository.findByStartYearAndEndYear(startYear, endYear);
+        if (students.isEmpty()) {
+            throw new StudentNotFoundException("Student not found with startYear : " + startYear + " and endYear : " + endYear);
+        }
         return students.stream()
                 .map(student -> StudentProfileResponseDTO.builder()
                         .id(student.getId())

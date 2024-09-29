@@ -30,6 +30,7 @@
         <module>instance-service</module>
         <module>eureka-server</module>
         <module>auth-service</module>
+        <module>spring-cloud-gateway</module>
     </modules>
 
     <scm>

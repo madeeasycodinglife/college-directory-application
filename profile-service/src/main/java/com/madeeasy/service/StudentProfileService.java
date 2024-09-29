@@ -10,8 +10,6 @@ import java.util.List;
 
 public interface StudentProfileService {
 
-    StudentProfileResponseDTO getStudentProfile(Long id);
-
     StudentProfileResponseDTO createStudentProfile(MultipartFile file, StudentProfileRequestDTO studentProfileRequestDTO) throws IOException;
 
     StudentProfileResponseDTO getPhotoById(Long id);

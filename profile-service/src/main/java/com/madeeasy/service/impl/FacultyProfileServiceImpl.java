@@ -29,6 +29,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FacultyProfileServiceImpl implements FacultyProfileService {
+
     private final FacultyProfileRepository facultyProfileRepository;
     private final RestTemplate restTemplate;
 

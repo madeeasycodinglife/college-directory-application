@@ -1,0 +1,206 @@
+server:
+    port: ${SERVER_PORT:8080}
+
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=${SPRING_CLOUD_GATEWAY_DEFAULT_FILTERS_DEDUPE_RESPONSE_HEADER:Access-Control-Allow-Origin}
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: ${SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS_CONFIGURATIONS__ALLOWED_ORIGINS:http://localhost:5173}
+            allowed-methods: ${SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS_CONFIGURATIONS__ALLOWED_METHODS:*}
+            allowed-headers: ${SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS_CONFIGURATIONS__ALLOWED_HEADERS:*}
+            allow-credentials: ${SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS_CONFIGURATIONS__ALLOW_CREDENTIALS:true}
+
+
+
+      discovery:
+        locator:
+          enabled: ${SPRING_CLOUD_GATEWAY_DISCOVERY_LOCATOR_ENABLED:true}
+
+      routes:
+
+        - id: course-service
+          uri: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_URI:lb://course-service}
+          predicates:
+            - Path=${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_PREDICATES_PATH:/api/courses/**}
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fault-service
+                fallbackUri: forward:/fallback/course-service
+#            - name: RequestRateLimiter
+#              args:
+#                redis-rate-limiter:
+#                  replenishRate: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_FILTERS_REQUEST_RATE_LIMITER_REPLENISH_RATE:50}
+#                  burstCapacity: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_FILTERS_REQUEST_RATE_LIMITER_BURST_CAPACITY:100}
+#                  requestedTokens: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_FILTERS_REQUEST_RATE_LIMITER_REQUESTED_TOKENS:1}
+#                key-resolver: "#{@ipKeyResolver}"
+
+        - id: course-instance-service
+          uri: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_INSTANCE_SERVICE_URI:lb://instance-service}
+          predicates:
+            - Path=${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_INSTANCE_SERVICE_PREDICATES_PATH:/api/instances/**}
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fault-service
+                fallbackUri: forward:/fallback/instance-service
+#            - name: RequestRateLimiter
+#              args:
+#                redis-rate-limiter:
+#                  replenishRate: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_INSTANCE_SERVICE_FILTERS_REQUEST_RATE_LIMITER_REPLENISH_RATE:50}
+#                  burstCapacity: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_INSTANCE_SERVICE_FILTERS_REQUEST_RATE_LIMITER_BURST_CAPACITY:100}
+#                  requestedTokens: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_INSTANCE_SERVICE_FILTERS_REQUEST_RATE_LIMITER_REQUESTED_TOKENS:1}
+#                key-resolver: "#{@ipKeyResolver}"
+
+        - id: auth-service
+          uri: ${SPRING_CLOUD_GATEWAY_ROUTES_AUTH_SERVICE_URI:lb://auth-service}
+          predicates:
+            - Path=${SPRING_CLOUD_GATEWAY_ROUTES_AUTH_SERVICE_PREDICATES_PATH:/auth-service/**}
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fault-service
+                fallbackUri: forward:/fallback/auth-service
+#            - name: RequestRateLimiter
+#              args:
+#                redis-rate-limiter:
+#                  replenishRate: ${SPRING_CLOUD_GATEWAY_ROUTES_AUTH_SERVICE_FILTERS_REQUEST_RATE_LIMITER_REPLENISH_RATE:50}
+#                  burstCapacity: ${SPRING_CLOUD_GATEWAY_ROUTES_AUTH_SERVICE_FILTERS_REQUEST_RATE_LIMITER_BURST_CAPACITY:100}
+#                  requestedTokens: ${SPRING_CLOUD_GATEWAY_ROUTES_AUTH_SERVICE_FILTERS_REQUEST_RATE_LIMITER_REQUESTED_TOKENS:1}
+#                key-resolver: "#{@ipKeyResolver}"
+
+        - id: user-service
+          uri: ${SPRING_CLOUD_GATEWAY_ROUTES_USER_SERVICE_URI:lb://user-service}
+          predicates:
+            - Path=${SPRING_CLOUD_GATEWAY_ROUTES_USER_SERVICE_PREDICATES_PATH:/api/user/**}
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fault-service
+                fallbackUri: forward:/fallback/user-service
+#            - name: RequestRateLimiter
+#              args:
+#                redis-rate-limiter:
+#                  replenishRate: ${SPRING_CLOUD_GATEWAY_ROUTES_USER_SERVICE_FILTERS_REQUEST_RATE_LIMITER_REPLENISH_RATE:50}
+#                  burstCapacity: ${SPRING_CLOUD_GATEWAY_ROUTES_USER_SERVICE_FILTERS_REQUEST_RATE_LIMITER_BURST_CAPACITY:100}
+#                  requestedTokens: ${SPRING_CLOUD_GATEWAY_ROUTES_USER_SERVICE_FILTERS_REQUEST_RATE_LIMITER_REQUESTED_TOKENS:1}
+#                key-resolver: "#{@ipKeyResolver}"
+
+
+        - id: department-service
+          uri: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_URI:lb://department-service}
+          predicates:
+            - Path=${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_PREDICATES_PATH:/api/department/**}
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fault-service
+                fallbackUri: forward:/fallback/department-service
+
+        - id: enrollment-service
+          uri: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_URI:lb://enrollment-service}
+          predicates:
+            - Path=${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_PREDICATES_PATH:/api/enrollment/**}
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fault-service
+                fallbackUri: forward:/fallback/enrollment-service
+
+
+        - id: administrator-profile
+          uri: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_URI:lb://profile-service}
+          predicates:
+            - Path=${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_PREDICATES_PATH:/api/administrator-profile/**}
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fault-service
+                fallbackUri: forward:/fallback/profile-service
+
+
+
+        - id: faculty-profile
+          uri: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_URI:lb://profile-service}
+          predicates:
+            - Path=${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_PREDICATES_PATH:/api/faculty-profile/**}
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fault-service
+                fallbackUri: forward:/fallback/profile-service
+
+
+        - id: student-profile
+          uri: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_URI:lb://profile-service}
+          predicates:
+            - Path=${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_SERVICE_PREDICATES_PATH:/api/student-profile/**}
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fault-service
+                fallbackUri: forward:/fallback/profile-service
+
+
+  output:
+    ansi:
+      enabled: ${SPRING_OUTPUT_ANSI_ENABLED:ALWAYS}
+#  kafka:
+#    bootstrap-servers:
+#      - ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+  application:
+    name: ${SPRING_APPLICATION_NAME:spring-cloud-gateway}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:*}
+  health:
+    circuitbreakers:
+      enabled: ${MANAGEMENT_HEALTH_CIRCUITBREAKERS_ENABLED:true}
+  endpoint:
+    health:
+      show-details: ${MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS:ALWAYS}
+#  tracing:
+#    enabled: ${MANAGEMENT_TRACING_ENABLED:true}
+#    sampling:
+#      probability: ${MANAGEMENT_TRACING_SAMPLING_PROBABILITY:1.0}
+#  zipkin:
+#    tracing:
+#      endpoint: ${MANAGEMENT_ZIPKIN_TRACING_ENDPOINT:http://localhost:9411/api/v2/spans}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      fault-service:
+        registerHealthIndicator: ${RESILIENCE4J_CIRCUITBREAKER_INSTANCES_FAULT_SERVICE_REGISTERHEALTHINDICATOR:true}
+        failureRateThreshold: ${RESILIENCE4J_CIRCUITBREAKER_INSTANCES_FAULT_SERVICE_FAILURERATETHRESHOLD:50}
+        minimumNumberOfCalls: ${RESILIENCE4J_CIRCUITBREAKER_INSTANCES_FAULT_SERVICE_MINIMUMNUMBEROFCALLS:5}
+        slidingWindowSize: ${RESILIENCE4J_CIRCUITBREAKER_INSTANCES_FAULT_SERVICE_SLIDINGWINDOWSIZE:10}
+        waitDurationInOpenState: ${RESILIENCE4J_CIRCUITBREAKER_INSTANCES_FAULT_SERVICE_WAITDURATIONINOPENSTATE:10000}
+        permittedNumberOfCallsInHalfOpenState: ${RESILIENCE4J_CIRCUITBREAKER_INSTANCES_FAULT_SERVICE_PERMITTEDNUMBEROFCALLSINHALFOPENSTATE:3}
+        automaticTransitionFromOpenToHalfOpenEnabled: ${RESILIENCE4J_CIRCUITBREAKER_INSTANCES_FAULT_SERVICE_AUTOMATICTRANSITIONFROMOPENTOHALFOPENENABLED:true}
+        slidingWindowType: ${RESILIENCE4J_CIRCUITBREAKER_INSTANCES_FAULT_SERVICE_SLIDINGWINDOWTYPE:COUNT_BASED}
+
+  timelimiter:
+    instances:
+      fault-service:
+        timeoutDuration: ${RESILIENCE4J_TIMELIMITER_INSTANCES_FAULT_SERVICE_TIMEOUTDURATION:20s}
+
+eureka:
+  client:
+    register-with-eureka: ${EUREKA_CLIENT_REGISTER_WITH_EUREKA:true}
+    fetch-registry: ${EUREKA_CLIENT_FETCH_REGISTRY:true}
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+    registry-fetch-interval-seconds: ${EUREKA_CLIENT_REGISTRY_FETCH_INTERVAL_SECONDS:30}
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}  # Add the hostname property here
+    prefer-ip-address: ${EUREKA_INSTANCE_PREFER_IP_ADDRESS:true}
+    lease-renewal-interval-in-seconds: ${EUREKA_INSTANCE_LEASE_RENEWAL_INTERVAL_IN_SECONDS:30}
+    lease-expiration-duration-in-seconds: ${EUREKA_INSTANCE_LEASE_EXPIRATION_DURATION_IN_SECONDS:90}
+
