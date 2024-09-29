@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -189,5 +190,24 @@ public class FacultyProfileServiceImpl implements FacultyProfileService {
                 .departmentId(facultyProfile.getDepartmentId())
                 .officeHours(facultyProfile.getOfficeHours())
                 .build();
+    }
+
+    @Override
+    public List<FacultyProfileResponseDTO> getFacultiesByDepartmentId(Long id) {
+
+        List<FacultyProfile> facultyProfiles = this.facultyProfileRepository.findByDepartmentId(id);
+        if (facultyProfiles.isEmpty()) {
+            return List.of();
+        }
+        return facultyProfiles.stream()
+                .map(facultyProfile -> FacultyProfileResponseDTO.builder()
+                        .id(facultyProfile.getId())
+                        .photo(facultyProfile.getPhoto())
+                        .type(facultyProfile.getType())
+                        .departmentId(facultyProfile.getDepartmentId())
+                        .officeHours(facultyProfile.getOfficeHours())
+                        .build()
+                )
+                .collect(Collectors.toList());
     }
 }

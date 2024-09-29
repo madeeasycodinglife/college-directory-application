@@ -19,4 +19,6 @@ public interface FacultyProfileService {
     FacultyProfileResponseDTO getFacultyById(Long id);
 
     FacultyProfileResponseDTO partiallyUpdateUser(Long id, FacultyPartialProfileRequestDTO facultyProfileRequestDTO);
+
+    List<FacultyProfileResponseDTO> getFacultiesByDepartmentId(Long id);
 }

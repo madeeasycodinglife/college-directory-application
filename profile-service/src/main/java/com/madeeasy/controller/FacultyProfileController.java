@@ -103,4 +103,21 @@ public class FacultyProfileController {
         return ResponseEntity.ok()
                 .body(courses);
     }
+
+    @GetMapping(path = "/get-faculty-by-department-id/{id}")
+    public ResponseEntity<?> getFacultiesByDepartmentId(@PathVariable Long id) {
+        Map<String, String> errors = ValidationUtils.validatePositiveInteger(id.intValue(), "id");
+        if (!errors.isEmpty()) {
+            return ResponseEntity.badRequest().body(errors);
+        }
+        List<FacultyProfileResponseDTO> faculties = this.facultyProfileService.getFacultiesByDepartmentId(id);
+        if (faculties.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(FacultyProfileResponseDTO.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message("No faculty found for this department")
+                    .build());
+        }
+        return ResponseEntity.ok()
+                .body(faculties);
+    }
 }
