@@ -40,7 +40,7 @@ spring:
 #                key-resolver: "#{@ipKeyResolver}"
 
         - id: course-instance-service
-          uri: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_INSTANCE_SERVICE_URI:lb://instance-service}
+          uri: ${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_INSTANCE_SERVICE_URI:lb://course-instance-service}
           predicates:
             - Path=${SPRING_CLOUD_GATEWAY_ROUTES_COURSE_INSTANCE_SERVICE_PREDICATES_PATH:/api/instances/**}
           filters:
