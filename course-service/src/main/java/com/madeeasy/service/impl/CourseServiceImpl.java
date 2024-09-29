@@ -187,6 +187,9 @@ public class CourseServiceImpl implements CourseService {
     public List<CourseResponseDTO> getCoursesByFacultyId(Long id) {
 
         List<Course> coursesByFacultyId = this.courseRepository.findByFacultyId(id);
+        if (coursesByFacultyId.isEmpty()) {
+            return List.of();
+        }
         log.info("{}", coursesByFacultyId);
         return coursesByFacultyId.stream()
                 .map(course -> CourseResponseDTO.builder()
@@ -280,7 +283,7 @@ public class CourseServiceImpl implements CourseService {
         Course course = optionalCourse.get();
 
         if (courseRequestDTO.getFacultyId() != null) {
-            String facultyUrl = "http://profile-service/api/faculty-profile/get-by-id/" + course.getFacultyId();
+            String facultyUrl = "http://profile-service/api/faculty-profile/get-by-id/" + courseRequestDTO.getFacultyId();
 
             HttpEntity<String> requestEntity = createHttpEntityWithToken(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
 
@@ -291,7 +294,7 @@ public class CourseServiceImpl implements CourseService {
         }
         if (courseRequestDTO.getDepartmentId() != null) {
 
-            String departmentUrl = "http://department-service/api/department/get-department-by-id/" + course.getDepartmentId();
+            String departmentUrl = "http://department-service/api/department/get-department-by-id/" + courseRequestDTO.getDepartmentId();
 
             HttpEntity<String> requestEntity = createHttpEntityWithToken(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
 

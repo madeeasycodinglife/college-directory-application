@@ -50,7 +50,8 @@ public class CourseController {
     }
 
     @PatchMapping(path = "/update-course-assignment/{courseId}")
-    public ResponseEntity<?> partialUpdateCourseAssignment(@PathVariable Long courseId, @Valid @RequestBody CourseAssignmentPartialRequestDTO courseRequestDTO) {
+    public ResponseEntity<?> partialUpdateCourseAssignment(@PathVariable Long courseId,
+                                                           @Valid @RequestBody CourseAssignmentPartialRequestDTO courseRequestDTO) {
         CourseResponseDTO courseResponseDTO = courseService.partialUpdateCourseAssignment
                 (courseId, courseRequestDTO);
         if (courseResponseDTO.getStatus() == HttpStatus.BAD_REQUEST) {
@@ -71,7 +72,7 @@ public class CourseController {
 
         if (courses.isEmpty()) {
             // Return 204 No Content if there are no courses
-            return ResponseEntity.status(HttpStatus.OK).body(List.of());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(List.of());
         }
         // Return 200 OK with the list of courses
         return ResponseEntity.ok(courses);
@@ -102,6 +103,12 @@ public class CourseController {
     @GetMapping(path = "/faculty/{id}")
     public ResponseEntity<?> getCoursesByFacultyId(@PathVariable Long id) {
         List<CourseResponseDTO> courses = courseService.getCoursesByFacultyId(id);
+        if (courses.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CourseResponseDTO.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message("No courses assigned found for this faculty")
+                    .build());
+        }
         return ResponseEntity.status(HttpStatus.OK).body(courses);
     }
 
