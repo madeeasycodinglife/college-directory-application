@@ -1,5 +1,6 @@
 package com.madeeasy.service;
 
+import com.madeeasy.dto.request.EnrollmentPartialRequestDTO;
 import com.madeeasy.dto.request.EnrollmentRequestDTO;
 import com.madeeasy.dto.response.EnrollmentResponseDTO;
 
@@ -14,4 +15,6 @@ public interface EnrollmentService {
     List<EnrollmentResponseDTO> getEnrollmentByCourseId(Long courseId);
 
     List<EnrollmentResponseDTO> getEnrollmentsByStudentId(Long studentId);
+
+    EnrollmentResponseDTO partialUpdateEnrollment(Long enrollmentId, EnrollmentPartialRequestDTO enrollmentPartialRequestDTO);
 }

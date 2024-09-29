@@ -1,5 +1,6 @@
 package com.madeeasy.controller;
 
+import com.madeeasy.dto.request.CourseAssignmentPartialRequestDTO;
 import com.madeeasy.dto.request.CourseAssignmentRequestDTO;
 import com.madeeasy.dto.request.CourseRequestDTO;
 import com.madeeasy.dto.response.CourseResponseDTO;
@@ -48,6 +49,22 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedCourse);
     }
 
+    @PatchMapping(path = "/update-course-assignment/{courseId}")
+    public ResponseEntity<?> partialUpdateCourseAssignment(@PathVariable Long courseId, @Valid @RequestBody CourseAssignmentPartialRequestDTO courseRequestDTO) {
+        CourseResponseDTO courseResponseDTO = courseService.partialUpdateCourseAssignment
+                (courseId, courseRequestDTO);
+        if (courseResponseDTO.getStatus() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(courseResponseDTO);
+        } else if (courseResponseDTO.getStatus() == HttpStatus.NOT_FOUND) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(courseResponseDTO);
+        } else if (courseResponseDTO.getStatus() == HttpStatus.CONFLICT) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(courseResponseDTO);
+        } else if (courseResponseDTO.getStatus() == HttpStatus.SERVICE_UNAVAILABLE) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(courseResponseDTO);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(courseResponseDTO);
+    }
+
     @GetMapping
     public ResponseEntity<?> getAllCourses() {
         List<CourseResponseDTO> courses = courseService.getAllCourses();
@@ -89,6 +106,7 @@ public class CourseController {
     }
 
 
+    @GetMapping(path = "/department/{id}")
     public ResponseEntity<?> getCoursesByDepartmentId(@PathVariable Long id) {
         List<CourseResponseDTO> courses = courseService.getCoursesByDepartmentId(id);
         return ResponseEntity.status(HttpStatus.OK).body(courses);

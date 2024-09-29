@@ -1,5 +1,6 @@
 package com.madeeasy.service;
 
+import com.madeeasy.dto.request.FacultyPartialProfileRequestDTO;
 import com.madeeasy.dto.request.FacultyProfileRequestDTO;
 import com.madeeasy.dto.response.FacultyProfileResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,4 +17,6 @@ public interface FacultyProfileService {
     List<FacultyProfileResponseDTO> getCoursesByFacultyId(Long id);
 
     FacultyProfileResponseDTO getFacultyById(Long id);
+
+    FacultyProfileResponseDTO partiallyUpdateUser(Long id, FacultyPartialProfileRequestDTO facultyProfileRequestDTO);
 }

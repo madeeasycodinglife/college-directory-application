@@ -2,6 +2,7 @@ package com.madeeasy.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.madeeasy.dto.request.FacultyPartialProfileRequestDTO;
 import com.madeeasy.dto.request.FacultyProfileRequestDTO;
 import com.madeeasy.dto.response.FacultyProfileResponseDTO;
 import com.madeeasy.entity.FacultyProfile;
@@ -156,6 +157,29 @@ public class FacultyProfileServiceImpl implements FacultyProfileService {
 
         FacultyProfile facultyProfile = this.facultyProfileRepository.findById(id)
                 .orElseThrow(() -> new FacultyNotFoundException("Faculty not found with id : " + id));
+
+        return FacultyProfileResponseDTO.builder()
+                .id(facultyProfile.getId())
+                .photo(facultyProfile.getPhoto())
+                .type(facultyProfile.getType())
+                .departmentId(facultyProfile.getDepartmentId())
+                .officeHours(facultyProfile.getOfficeHours())
+                .build();
+    }
+
+    @Override
+    public FacultyProfileResponseDTO partiallyUpdateUser(Long id, FacultyPartialProfileRequestDTO facultyProfileRequestDTO) {
+
+        FacultyProfile facultyProfile = this.facultyProfileRepository.findById(id).orElseThrow(() -> new FacultyNotFoundException("Faculty Not found with id : " + id));
+
+        if (facultyProfileRequestDTO.getDepartmentId() != null) {
+            facultyProfile.setDepartmentId(facultyProfileRequestDTO.getDepartmentId());
+        }
+        if (facultyProfileRequestDTO.getOfficeHours() != null) {
+            facultyProfile.setOfficeHours(facultyProfileRequestDTO.getOfficeHours());
+        }
+
+        this.facultyProfileRepository.save(facultyProfile);
 
         return FacultyProfileResponseDTO.builder()
                 .id(facultyProfile.getId())

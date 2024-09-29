@@ -2,9 +2,8 @@ package com.madeeasy.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.madeeasy.dto.request.AdministratorProfileRequestDTO;
+import com.madeeasy.dto.request.StudentPartialProfileRequestDTO;
 import com.madeeasy.dto.request.StudentProfileRequestDTO;
-import com.madeeasy.dto.response.FacultyProfileResponseDTO;
 import com.madeeasy.dto.response.StudentProfileResponseDTO;
 import com.madeeasy.entity.StudentProfile;
 import com.madeeasy.exception.StudentNotFoundException;
@@ -196,6 +195,34 @@ public class StudentProfileServiceImpl implements StudentProfileService {
     @Override
     public StudentProfileResponseDTO getStudentById(Long id) {
         StudentProfile studentProfile = this.studentProfileRepository.findById(id).orElseThrow(() -> new StudentNotFoundException("Student not found with id : " + id));
+
+        return StudentProfileResponseDTO.builder()
+                .id(studentProfile.getId())
+                .photo(studentProfile.getPhoto())
+                .type(studentProfile.getType())
+                .departmentId(studentProfile.getDepartmentId())
+                .startYear(studentProfile.getStartYear())
+                .endYear(studentProfile.getEndYear())
+                .build();
+    }
+
+    @Override
+    public StudentProfileResponseDTO partiallyUpdateUser(Long id, StudentPartialProfileRequestDTO studentProfileRequestDTO) {
+
+        StudentProfile studentProfile = this.studentProfileRepository.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException("Student not found with id : " + id));
+
+        if (studentProfileRequestDTO.getDepartmentId() != null) {
+            studentProfile.setDepartmentId(studentProfileRequestDTO.getDepartmentId());
+        }
+        if (studentProfileRequestDTO.getStartYear() != null) {
+            studentProfile.setStartYear(studentProfileRequestDTO.getStartYear());
+        }
+        if (studentProfileRequestDTO.getEndYear() != null) {
+            studentProfile.setEndYear(studentProfileRequestDTO.getEndYear());
+        }
+
+        this.studentProfileRepository.save(studentProfile);
 
         return StudentProfileResponseDTO.builder()
                 .id(studentProfile.getId())

@@ -1,5 +1,6 @@
 package com.madeeasy.controller;
 
+import com.madeeasy.dto.request.EnrollmentPartialRequestDTO;
 import com.madeeasy.dto.request.EnrollmentRequestDTO;
 import com.madeeasy.dto.response.EnrollmentResponseDTO;
 import com.madeeasy.service.EnrollmentService;
@@ -31,10 +32,29 @@ public class EnrollmentServiceController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(enrollmentResponseDTO);
         } else if (enrollmentResponseDTO.getStatus() == HttpStatus.NOT_FOUND) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(enrollmentResponseDTO);
-        }else if (enrollmentResponseDTO.getStatus() == HttpStatus.SERVICE_UNAVAILABLE) {
+        } else if (enrollmentResponseDTO.getStatus() == HttpStatus.SERVICE_UNAVAILABLE) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(enrollmentResponseDTO);
         }
 
+        return ResponseEntity.status(HttpStatus.OK).body(enrollmentResponseDTO);
+    }
+
+    @PatchMapping(path = "/partial-update/{enrollmentId}")
+    public ResponseEntity<?> partialUpdateEnrollment(@PathVariable Long enrollmentId, @Valid @RequestBody EnrollmentPartialRequestDTO enrollmentPartialRequestDTO) {
+        Map<String, String> validationErrors = ValidationUtils.validatePositiveInteger(enrollmentId.intValue(), "enrollmentId");
+        if (!validationErrors.isEmpty()) {
+            return ResponseEntity.badRequest().body(validationErrors);
+        }
+        EnrollmentResponseDTO enrollmentResponseDTO = this.enrollmentService.partialUpdateEnrollment(enrollmentId, enrollmentPartialRequestDTO);
+        if (enrollmentResponseDTO.getStatus() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(enrollmentResponseDTO);
+        } else if (enrollmentResponseDTO.getStatus() == HttpStatus.NOT_FOUND) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(enrollmentResponseDTO);
+        } else if (enrollmentResponseDTO.getStatus() == HttpStatus.SERVICE_UNAVAILABLE) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(enrollmentResponseDTO);
+        } else if (enrollmentResponseDTO.getStatus() == HttpStatus.CONFLICT) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(enrollmentResponseDTO);
+        }
         return ResponseEntity.status(HttpStatus.OK).body(enrollmentResponseDTO);
     }
 
@@ -43,6 +63,7 @@ public class EnrollmentServiceController {
         List<EnrollmentResponseDTO> enrollments = this.enrollmentService.getAllEnrollments();
         return ResponseEntity.status(HttpStatus.OK).body(enrollments);
     }
+
 
     @GetMapping(path = "/get-enrollments-by-course-id/{courseId}")
     public ResponseEntity<?> getEnrollmentByCourseId(@PathVariable Long courseId) {

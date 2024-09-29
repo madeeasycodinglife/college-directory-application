@@ -1,5 +1,6 @@
 package com.madeeasy.controller;
 
+import com.madeeasy.dto.request.AdministratorPartialProfileRequestDTO;
 import com.madeeasy.dto.request.AdministratorProfileRequestDTO;
 import com.madeeasy.dto.response.AdministratorProfileResponseDTO;
 import com.madeeasy.service.AdministratorProfileService;
@@ -43,6 +44,19 @@ public class AdministratorProfileController {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(administratorProfile);
+    }
+
+
+    @PatchMapping(path = "/partial-update/{id}")
+    public ResponseEntity<?> partiallyUpdateUser(@PathVariable("id") Long id,
+                                                 @Valid @RequestBody AdministratorPartialProfileRequestDTO administratorProfileRequestDTO) {
+        Map<String, String> errors = ValidationUtils.validatePositiveInteger(id.intValue(), "id");
+        if (!errors.isEmpty()) {
+            return ResponseEntity.badRequest().body(errors);
+        }
+        AdministratorProfileResponseDTO administratorProfileResponseDTO = this.administratorProfileService.partiallyUpdateUser(id, administratorProfileRequestDTO);
+        return ResponseEntity.ok()
+                .body(administratorProfileResponseDTO);
     }
 
     @GetMapping(path = "/get-photo-by-id/{id}")

@@ -2,6 +2,7 @@ package com.madeeasy.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.madeeasy.dto.request.CourseAssignmentPartialRequestDTO;
 import com.madeeasy.dto.request.CourseAssignmentRequestDTO;
 import com.madeeasy.dto.request.CourseRequestDTO;
 import com.madeeasy.dto.response.CourseResponseDTO;
@@ -29,6 +30,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -262,6 +264,111 @@ public class CourseServiceImpl implements CourseService {
                 .build();
     }
 
+    @CircuitBreaker(name = "myCircuitBreaker", fallbackMethod = "courseAssignmentPartialFallbackMethod")
+    @Override
+    public CourseResponseDTO partialUpdateCourseAssignment(Long courseId, CourseAssignmentPartialRequestDTO courseRequestDTO) {
+
+        Optional<Course> optionalCourse = this.courseRepository.findById(courseId);
+
+        if (optionalCourse.isEmpty()) {
+            return CourseResponseDTO.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message("Course not found with id : " + courseId)
+                    .build();
+        }
+
+        Course course = optionalCourse.get();
+
+        if (courseRequestDTO.getFacultyId() != null) {
+            String facultyUrl = "http://profile-service/api/faculty-profile/get-by-id/" + course.getFacultyId();
+
+            HttpEntity<String> requestEntity = createHttpEntityWithToken(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
+
+            FacultyProfileResponseDTO facultyResponse = restTemplate.exchange(facultyUrl, HttpMethod.GET, requestEntity, FacultyProfileResponseDTO.class)
+                    .getBody();
+
+            course.setFacultyId(courseRequestDTO.getFacultyId());
+        }
+        if (courseRequestDTO.getDepartmentId() != null) {
+
+            String departmentUrl = "http://department-service/api/department/get-department-by-id/" + course.getDepartmentId();
+
+            HttpEntity<String> requestEntity = createHttpEntityWithToken(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
+
+            DepartmentResponseDTO departmentResponse = restTemplate.exchange(departmentUrl, HttpMethod.GET, requestEntity, DepartmentResponseDTO.class)
+                    .getBody();
+
+            course.setDepartmentId(courseRequestDTO.getDepartmentId());
+        }
+
+        this.courseRepository.save(course);
+
+        return CourseResponseDTO.builder()
+                .id(course.getId())
+                .title(course.getTitle())
+                .courseCode(course.getCourseCode())
+                .description(course.getDescription())
+                .facultyId(course.getFacultyId())
+                .departmentId(course.getDepartmentId())
+                .build();
+
+    }
+
+
+    public CourseResponseDTO courseAssignmentPartialFallbackMethod(Long courseId, CourseAssignmentPartialRequestDTO courseRequestDTO, Throwable t) {
+        log.error("message : {}", t.getMessage());
+
+        // Check if the throwable is an instance of HttpClientErrorException
+        if (t instanceof HttpClientErrorException exception) {
+            if (exception.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+                try {
+                    // Parse the response body as JSON
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode jsonNode = objectMapper.readTree(exception.getResponseBodyAsString());
+
+                    // Extract specific fields from the JSON, such as 'message' and 'status'
+                    String errorMessage = jsonNode.path("message").asText();
+                    String errorStatus = jsonNode.path("status").asText();
+
+                    // Log the extracted information
+                    log.error("message : {} , status : {}", errorMessage, errorStatus);
+
+                    return CourseResponseDTO.builder()
+                            .status(HttpStatus.BAD_REQUEST)
+                            .message(errorMessage)
+                            .build();
+                } catch (Exception e) {
+                    log.error("Failed to parse the error response", e);
+                }
+            } else {
+                try {
+                    // Parse the response body as JSON
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode jsonNode = objectMapper.readTree(exception.getResponseBodyAsString());
+
+                    // Extract specific fields from the JSON, such as 'message' and 'status'
+                    String errorMessage = jsonNode.path("message").asText();
+                    String errorStatus = jsonNode.path("status").asText();
+
+                    // Log the extracted information
+                    log.error("message : {} , status : {}", errorMessage, errorStatus);
+
+                    return CourseResponseDTO.builder()
+                            .status(HttpStatus.BAD_REQUEST)
+                            .message(errorMessage)
+                            .build();
+                } catch (Exception e) {
+                    log.error("Failed to parse the error response", e);
+                }
+            }
+        }
+
+        // Fallback response if the exception is not HttpClientErrorException or any other case
+        return CourseResponseDTO.builder()
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .message("Sorry !! Service is unavailable. Please try again later.")
+                .build();
+    }
 
     public CourseResponseDTO courseAssignmentFallbackMethod(
             CourseAssignmentRequestDTO course,

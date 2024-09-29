@@ -2,6 +2,7 @@ package com.madeeasy.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.madeeasy.dto.request.EnrollmentPartialRequestDTO;
 import com.madeeasy.dto.request.EnrollmentRequestDTO;
 import com.madeeasy.dto.response.EnrollmentResponseDTO;
 import com.madeeasy.entity.Enrollment;
@@ -23,6 +24,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +42,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
 
         String courseServiceUrl = "http://course-service/api/courses/";
-        String studentServiceUrl = "http://student-service/api/student-profile/get-by-id/";
+        String studentServiceUrl = "http://profile-service/api/student-profile/get-by-id/";
 
 
         // rest-call to course-service to know if course exists
@@ -194,5 +196,129 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                         .courseId(enrollment.getCourseId())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @CircuitBreaker(name = "myCircuitBreaker", fallbackMethod = "createEnrollmentFallbackMethod")
+    @Override
+    public EnrollmentResponseDTO partialUpdateEnrollment(Long enrollmentId, EnrollmentPartialRequestDTO enrollmentPartialRequestDTO) {
+
+        Optional<Enrollment> optionalEnrollment = this.enrollmentRepository.findById(enrollmentId);
+
+        if (optionalEnrollment.isEmpty()) {
+            return EnrollmentResponseDTO.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message("Enrollment not found with id : " + enrollmentId)
+                    .build();
+        }
+        Enrollment enrollment = optionalEnrollment.get();
+
+        if (enrollmentPartialRequestDTO.getStudentId() != null) {
+
+            String studentServiceUrl = "http://profile-service/api/student-profile/get-by-id/";
+
+            // Get the authorization header from the request
+            String authorizationHeader = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+
+            // Create HttpEntity with the token
+            HttpEntity<String> requestEntity = createHttpEntityWithToken(authorizationHeader);
+            // Call course service
+            StudentProfileResponseDTO studentProfileResponse = restTemplate.exchange(
+                    studentServiceUrl + enrollmentPartialRequestDTO.getStudentId(),
+                    HttpMethod.GET,
+                    requestEntity,
+                    StudentProfileResponseDTO.class
+            ).getBody();
+
+            log.info("studentResponse: {}", studentProfileResponse);
+
+            enrollment.setStudentId(enrollmentPartialRequestDTO.getStudentId());
+        }
+
+        if (enrollmentPartialRequestDTO.getCourseId() != null) {
+
+            String courseServiceUrl = "http://course-service/api/courses/";
+
+            // Get the authorization header from the request
+            String authorizationHeader = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+
+            // Create HttpEntity with the token
+            HttpEntity<String> requestEntity = createHttpEntityWithToken(authorizationHeader);
+
+            // Call course service
+            CourseResponseDTO courseResponse = restTemplate.exchange(
+                    courseServiceUrl + enrollmentPartialRequestDTO.getCourseId(),
+                    HttpMethod.GET,
+                    requestEntity,
+                    CourseResponseDTO.class
+            ).getBody();
+
+            log.info("courseResponse: {}", courseResponse);
+
+            enrollment.setCourseId(enrollmentPartialRequestDTO.getCourseId());
+        }
+
+        this.enrollmentRepository.save(enrollment);
+
+        return EnrollmentResponseDTO.builder()
+                .id(enrollment.getId())
+                .studentId(enrollment.getStudentId())
+                .courseId(enrollment.getCourseId())
+                .build();
+
+    }
+
+    public EnrollmentResponseDTO createEnrollmentFallbackMethod(Long enrollmentId, EnrollmentPartialRequestDTO enrollmentPartialRequestDTO, Throwable t) {
+        log.error("message : {}", t.getMessage());
+
+        // Check if the throwable is an instance of HttpClientErrorException
+        if (t instanceof HttpClientErrorException exception) {
+            if (exception.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+                try {
+                    // Parse the response body as JSON
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode jsonNode = objectMapper.readTree(exception.getResponseBodyAsString());
+
+                    // Extract specific fields from the JSON, such as 'message' and 'status'
+                    String errorMessage = jsonNode.path("message").asText();
+                    String errorStatus = jsonNode.path("status").asText();
+
+                    // Log the extracted information
+                    log.error("message : {} , status : {}", errorMessage, errorStatus);
+
+                    return EnrollmentResponseDTO.builder()
+                            .status(HttpStatus.BAD_REQUEST)
+                            .message(errorMessage)
+                            .build();
+                } catch (Exception e) {
+                    log.error("Failed to parse the error response", e);
+                }
+            } else {
+                try {
+                    // Parse the response body as JSON
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode jsonNode = objectMapper.readTree(exception.getResponseBodyAsString());
+
+                    // Extract specific fields from the JSON, such as 'message' and 'status'
+                    String errorMessage = jsonNode.path("message").asText();
+                    String errorStatus = jsonNode.path("status").asText();
+
+                    // Log the extracted information
+                    log.error("message : {} , status : {}", errorMessage, errorStatus);
+
+                    return EnrollmentResponseDTO.builder()
+                            .status(HttpStatus.BAD_REQUEST)
+                            .message(errorMessage)
+                            .build();
+                } catch (Exception e) {
+                    log.error("Failed to parse the error response", e);
+                }
+            }
+        }
+
+        // Fallback response if the exception is not HttpClientErrorException or any other case
+        return EnrollmentResponseDTO.builder()
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .message("Sorry !! Service is unavailable. Please try again later.")
+                .build();
     }
 }

@@ -2,6 +2,7 @@ package com.madeeasy.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.madeeasy.dto.request.AdministratorPartialProfileRequestDTO;
 import com.madeeasy.dto.request.AdministratorProfileRequestDTO;
 import com.madeeasy.dto.response.AdministratorProfileResponseDTO;
 import com.madeeasy.entity.AdministratorProfile;
@@ -144,6 +145,27 @@ public class AdministratorProfileServiceImpl implements AdministratorProfileServ
 
         AdministratorProfile administratorProfile = this.administratorProfileRepository.findById(id)
                 .orElseThrow(() -> new AdministratorNotFoundException("Administrator not found with id : " + id));
+        return AdministratorProfileResponseDTO.builder()
+                .id(administratorProfile.getId())
+                .photo(administratorProfile.getPhoto())
+                .type(administratorProfile.getType())
+                .departmentId(administratorProfile.getDepartmentId())
+                .build();
+    }
+
+    @Override
+    public AdministratorProfileResponseDTO partiallyUpdateUser(Long id, AdministratorPartialProfileRequestDTO administratorProfileRequestDTO) {
+
+        AdministratorProfile administratorProfile = this.administratorProfileRepository.findById(id)
+                .orElseThrow(() -> new AdministratorNotFoundException("Administrator not found with id : " + id));
+
+
+        if (administratorProfileRequestDTO.getDepartmentId() != null) {
+            administratorProfile.setDepartmentId(administratorProfileRequestDTO.getDepartmentId());
+        }
+
+        this.administratorProfileRepository.save(administratorProfile);
+
         return AdministratorProfileResponseDTO.builder()
                 .id(administratorProfile.getId())
                 .photo(administratorProfile.getPhoto())

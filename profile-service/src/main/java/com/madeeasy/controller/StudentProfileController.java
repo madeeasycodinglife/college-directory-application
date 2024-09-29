@@ -1,5 +1,6 @@
 package com.madeeasy.controller;
 
+import com.madeeasy.dto.request.StudentPartialProfileRequestDTO;
 import com.madeeasy.dto.request.StudentProfileRequestDTO;
 import com.madeeasy.dto.response.StudentProfileResponseDTO;
 import com.madeeasy.service.StudentProfileService;
@@ -62,6 +63,17 @@ public class StudentProfileController {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(studentProfile);
+    }
+
+    @PatchMapping(path = "/partial-update/{id}")
+    public ResponseEntity<?> partiallyUpdateUser(@PathVariable("id") Long id,
+                                                 @Valid @RequestBody StudentPartialProfileRequestDTO studentProfileRequestDTO) {
+        Map<String, String> errors = ValidationUtils.validatePositiveInteger(id.intValue(), "id");
+        if (!errors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
+        StudentProfileResponseDTO studentProfileResponseDTO = this.studentProfileService.partiallyUpdateUser(id, studentProfileRequestDTO);
+        return ResponseEntity.ok().body(studentProfileResponseDTO);
     }
 
     @GetMapping(path = "/get-by-id/{id}")

@@ -1,5 +1,6 @@
 package com.madeeasy.service;
 
+import com.madeeasy.dto.request.AdministratorPartialProfileRequestDTO;
 import com.madeeasy.dto.request.AdministratorProfileRequestDTO;
 import com.madeeasy.dto.response.AdministratorProfileResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,4 +13,6 @@ public interface AdministratorProfileService {
     AdministratorProfileResponseDTO getPhotoById(Long id);
 
     AdministratorProfileResponseDTO getAdministratorById(Long id);
+
+    AdministratorProfileResponseDTO partiallyUpdateUser(Long id, AdministratorPartialProfileRequestDTO administratorProfileRequestDTO);
 }

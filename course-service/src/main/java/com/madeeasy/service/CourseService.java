@@ -1,5 +1,6 @@
 package com.madeeasy.service;
 
+import com.madeeasy.dto.request.CourseAssignmentPartialRequestDTO;
 import com.madeeasy.dto.request.CourseAssignmentRequestDTO;
 import com.madeeasy.dto.request.CourseRequestDTO;
 import com.madeeasy.dto.response.CourseResponseDTO;
@@ -24,4 +25,5 @@ public interface CourseService {
 
     CourseResponseDTO courseAssignment(CourseAssignmentRequestDTO course);
 
+    CourseResponseDTO partialUpdateCourseAssignment(Long courseId, CourseAssignmentPartialRequestDTO courseRequestDTO);
 }

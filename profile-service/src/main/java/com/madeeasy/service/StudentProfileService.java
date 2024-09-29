@@ -1,5 +1,6 @@
 package com.madeeasy.service;
 
+import com.madeeasy.dto.request.StudentPartialProfileRequestDTO;
 import com.madeeasy.dto.request.StudentProfileRequestDTO;
 import com.madeeasy.dto.response.StudentProfileResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,4 +21,6 @@ public interface StudentProfileService {
     List<StudentProfileResponseDTO> getStudentsByStartYearAndEndYear(Integer startYear, Integer endYear);
 
     StudentProfileResponseDTO getStudentById(Long id);
+
+    StudentProfileResponseDTO partiallyUpdateUser(Long id, StudentPartialProfileRequestDTO studentProfileRequestDTO);
 }
